@@ -1,0 +1,110 @@
+<svg width="592" xmlns="http://www.w3.org/2000/svg" height="156" id="screenshot-8efcdf4e-a489-80cf-8007-146b73e5772c" viewBox="-1 -1 592 156" style="-webkit-print-color-adjust::exact" xmlns:xlink="http://www.w3.org/1999/xlink" fill="none" version="1.1">
+  <style>
+  </style>
+  <g id="shape-8efcdf4e-a489-80cf-8007-146b73e5772c">
+    <g class="frame-container-wrapper">
+      <g class="frame-container-blur">
+        <defs>
+          <filter id="filter-shadow-render-35" x="-0.06048387096774194" y="-0.5" width="1.1451612903225807" height="2.2" filterUnits="objectBoundingBox" color-interpolation-filters="sRGB">
+            <feFlood flood-opacity="0" result="BackgroundImageFix">
+            </feFlood>
+            <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0">
+            </feColorMatrix>
+            <feOffset dx="4" dy="4">
+            </feOffset>
+            <feGaussianBlur stdDeviation="2.5">
+            </feGaussianBlur>
+            <feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.1 0">
+            </feColorMatrix>
+            <feBlend mode="normal" in2="BackgroundImageFix" result="filter_8efcdf4e-a489-80cf-8007-1483887859e9">
+            </feBlend>
+            <feBlend mode="normal" in="SourceGraphic" in2="filter_8efcdf4e-a489-80cf-8007-1483887859e9" result="shape">
+            </feBlend>
+          </filter>
+        </defs>
+        <g class="frame-container-shadows" filter="url(#filter-shadow-render-35)">
+          <g fill="none">
+            <g class="fills" id="fills-8efcdf4e-a489-80cf-8007-146b73e5772c">
+              <rect rx="0" ry="0" x="35" y="35" width="496" height="60" transform="matrix(1.000000, 0.000000, 0.000000, 1.000000, 0.000000, 0.000000)" class="frame-background">
+              </rect>
+            </g>
+            <g class="frame-children">
+              <g id="shape-8efcdf4e-a489-80cf-8007-146b73e5773f">
+                <defs>
+                  <filter id="filter-render-36" x="-0.05443548387096774" y="-0.45" width="1.1330645161290323" height="2.1" filterUnits="objectBoundingBox" color-interpolation-filters="sRGB">
+                    <feFlood flood-opacity="0" result="BackgroundImageFix">
+                    </feFlood>
+                    <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0">
+                    </feColorMatrix>
+                    <feOffset dx="4" dy="4">
+                    </feOffset>
+                    <feGaussianBlur stdDeviation="2">
+                    </feGaussianBlur>
+                    <feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.2 0">
+                    </feColorMatrix>
+                    <feBlend mode="normal" in2="BackgroundImageFix" result="filter_e59d6369-b21f-805c-8007-140f47150209">
+                    </feBlend>
+                    <feBlend mode="normal" in="SourceGraphic" in2="filter_e59d6369-b21f-805c-8007-140f47150209" result="shape">
+                    </feBlend>
+                  </filter>
+                  <filter id="filter-shadow-render-36" x="-0.05443548387096774" y="-0.45" width="1.1330645161290323" height="2.1" filterUnits="objectBoundingBox" color-interpolation-filters="sRGB">
+                    <feFlood flood-opacity="0" result="BackgroundImageFix">
+                    </feFlood>
+                    <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0">
+                    </feColorMatrix>
+                    <feOffset dx="4" dy="4">
+                    </feOffset>
+                    <feGaussianBlur stdDeviation="2">
+                    </feGaussianBlur>
+                    <feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.2 0">
+                    </feColorMatrix>
+                    <feBlend mode="normal" in2="BackgroundImageFix" result="filter_e59d6369-b21f-805c-8007-140f47150209">
+                    </feBlend>
+                    <feBlend mode="normal" in="SourceGraphic" in2="filter_e59d6369-b21f-805c-8007-140f47150209" result="shape">
+                    </feBlend>
+                  </filter>
+                </defs>
+                <g transform="matrix(1.000000, 0.000000, 0.000000, 1.000000, 0.000000, 0.000000)" class="text-container" x="35" y="35" width="496" height="60" filter="url(#filter-render-36)" rx="0" ry="0">
+                  <defs>
+                    <pattern patternUnits="objectBoundingBox" width="495.7734375" height="72" id="fill-0-render-36-0">
+                      <g>
+                        <rect width="495.7734375" height="72" style="fill:#ffffff;fill-opacity:1">
+                        </rect>
+                      </g>
+                    </pattern>
+                    <pattern patternUnits="objectBoundingBox" width="495.7734375" height="72" id="fill-1-render-36-0">
+                      <g>
+                        <rect width="495.7734375" height="72" style="fill:#ffffff;fill-opacity:1">
+                        </rect>
+                      </g>
+                    </pattern>
+                  </defs>
+                  <g class="fills" id="fills-8efcdf4e-a489-80cf-8007-146b73e5773f">
+                    <text x="35" y="101" dominant-baseline="ideographic" textLength="257.9296875" lengthAdjust="spacingAndGlyphs" style="text-transform:uppercase;font-family:Lato;letter-spacing:normal;font-style:normal;font-weight:700;white-space:pre;font-size:60px;text-decoration:none;direction:ltr;fill:#ffffff;fill-opacity:1">Athaka </text>
+                  </g>
+                  <defs>
+                    <pattern patternUnits="objectBoundingBox" width="495.7734375" height="72" id="fill-0-render-36-1">
+                      <g>
+                        <rect width="495.7734375" height="72" style="fill:#ffffff;fill-opacity:1">
+                        </rect>
+                      </g>
+                    </pattern>
+                    <pattern patternUnits="objectBoundingBox" width="495.7734375" height="72" id="fill-1-render-36-1">
+                      <g>
+                        <rect width="495.7734375" height="72" style="fill:#ffffff;fill-opacity:1">
+                        </rect>
+                      </g>
+                    </pattern>
+                  </defs>
+                  <g class="fills" id="fills-8efcdf4e-a489-80cf-8007-146b73e5773f">
+                    <text x="292.9296875" y="92" dominant-baseline="ideographic" textLength="237.84375" lengthAdjust="spacingAndGlyphs" style="text-transform:uppercase;font-family:Lato;letter-spacing:normal;font-style:normal;font-weight:300;white-space:pre;font-size:20px;text-decoration:none;direction:ltr;fill:#ffffff;fill-opacity:1"> Containers and more</text>
+                  </g>
+                </g>
+              </g>
+            </g>
+          </g>
+        </g>
+      </g>
+    </g>
+  </g>
+</svg>

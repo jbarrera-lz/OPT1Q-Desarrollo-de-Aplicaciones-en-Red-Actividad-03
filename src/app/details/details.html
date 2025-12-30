@@ -1,0 +1,8 @@
+<article>
+<img class="listing-photo" [src]="post?.getMainPicture()" [alt]="post?.getPhotoDescription()">
+<section class="listing-description">
+    <h2 class="listing-heading">{{ post?.name }}</h2>
+    <p class="listing-location">{{ post?.author }}, {{ post?.date}}</p>
+    <p class="listing-location">{{ post?.description }}</p>
+</section>
+</article>

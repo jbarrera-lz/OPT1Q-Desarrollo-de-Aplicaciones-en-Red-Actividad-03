@@ -1,4 +1,4 @@
-import { Component, OnInit, AfterViewInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Observable } from 'rxjs';
 import { AsyncPipe } from '@angular/common';
@@ -21,7 +21,7 @@ import { PetrolStationsService } from '../../services/petrol-stations-service';
   templateUrl: './map.html',
   styleUrl: './map.css',
 })
-export class MapComponent implements OnInit, AfterViewInit {
+export class MapComponent implements OnInit {
   /*------------------------------------*/
   /*  Members 
   /*------------------------------------*/
@@ -34,6 +34,7 @@ export class MapComponent implements OnInit, AfterViewInit {
   private _circleRadius: number = 3000; // in meters
 
   private _eess!: ListaEESSPrecio[];
+  private _coor!: Coordenates;
 
   private readonly _iconPetrolStation = new L.Icon(
     {
@@ -56,76 +57,34 @@ export class MapComponent implements OnInit, AfterViewInit {
     private _activatedRoute: ActivatedRoute
   ) { 
       console.log(`MapComponent constructor called.`);
-      this.coor$ = this._getLocationService.position;
+      this.coor$ = this._getLocationService.getMyLocation();
       this.petrolStation$ = this._petrolStationsService.getPetrolStations();
   }
 
   /*------------------------------------*/
   /* Lifecycle Hooks
   /*------------------------------------*/
-  public ngAfterViewInit(): void {
-    console.log(`MapComponent ngAfterViewInit called.`);
-    
-    // this.petrolStation$.subscribe(
-    //   (data) => {
-    //     this._eess = data ? data.ListaEESSPrecio : [];
-    //     console.log(`Fetched ${this._eess.length} petrol stations from service.`);
-    //     if(this._eess.length > 0){
-    //       this.addPetrolStationMarkers();
-    //     }
-    //   }
-    // );
-
-    this._activatedRoute.data.subscribe(
-      (data) => {
-        this._eess = data['petrolStations'] ? data['petrolStations'].ListaEESSPrecio : [];
-        console.log(`Fetched by Resolver ${this._eess.length} petrol stations from resolver.`);
-        if(this._eess.length > 0){
-          this.addPetrolStationMarkers();
-        }
-      }
-    );
-  }
-
   public ngOnInit(): void {
     console.log(`MapComponent ngOnInit called.`);
 
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          if (position) {
-            console.log(`Geolocation fetched: Lat ${position.coords.latitude}, Lon ${position.coords.longitude}`);
+    this._activatedRoute.data.subscribe(
+      (data) => {
+        this._coor = data['currentLocation'] ? data['currentLocation'] : null;
+        this._eess = data['petrolStations'] ? data['petrolStations'].ListaEESSPrecio : [];
+        
+        console.log(
+          `Fetched by Resolver: [${this._coor.latitude}º] - [${this._coor.longitude}º] coordenates`
+        );
+        console.log(
+          `Fetched by Resolver ${this._eess.length} petrol stations.`
+        );
+      }
+    );
 
-            this._getLocationService.position = { 
-              latitude: position.coords.latitude,
-              longitude: position.coords.longitude
-            };
+    this.initMap();
 
-            this._markers.push(L.marker(
-              [
-                position.coords.latitude, 
-                position.coords.longitude
-              ],
-              {
-                icon: this._iconCurrentLocation,
-                alt: 'Current Location Marker',
-                riseOnHover: true,
-                title: `Posición Actual:
-LATITUD: ${position.coords.latitude}º
-LONGITUD: ${position.coords.longitude}º`
-              }
-            ));
-
-            this.initMap();
-            
-          }
-        },
-        (error) => {
-          console.error(`Error fetching geolocation:`, error);
-        }
-      )
-    } else {
-      console.error('Geolocation is not supported by this browser.');
+    if(this._eess.length > 0) {
+      this.addPetrolStationMarkers();
     }
   }
 
@@ -148,14 +107,14 @@ LONGITUD: ${position.coords.longitude}º`
   /*------------------------------------*/
   private initMap(): void { 
     const baseMapURl = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
-    this._map = L.map('map');
-    
-    this._map.setView(
-      this._markers[0].getLatLng(), 13
-    );
-        
-    L.tileLayer(baseMapURl).addTo(this._map);
-    this.addCurrentLocationMarker();
+    const latlong = new L.LatLng(this._coor.latitude, this._coor.longitude);
+    const marker = new L.Marker(latlong);
+    const tile = new L.TileLayer(baseMapURl);
+
+    this._markers.push(marker); // Adding the first marker as your current location
+    this._map = L.map('map').setView(latlong, 13);
+    tile.addTo(this._map);
+    marker.addTo(this._map);
     this.drawCircle();
   }
 
@@ -172,11 +131,6 @@ LONGITUD: ${position.coords.longitude}º`
     }
   }
 
-  private addCurrentLocationMarker(): void {
-    if (this._map) {
-      this._markers[0].addTo(this._map);
-    }
-  }
 
   private addPetrolStationMarkers(): void {
     const stationsWithinCurrentRadius : ListaEESSPrecio[] = this.getPetrolStationsWithinRadius();
@@ -208,8 +162,8 @@ Horario: ${station['Horario']}`
 
     for (const eess of this._eess) {
       const distancia = MapComponent.calculateDistance(
-        this._markers[0].getLatLng().lat,
-        this._markers[0].getLatLng().lng,
+        this._coor.latitude,
+        this._coor.longitude,
         parseFloat(eess['Latitud']),
         parseFloat(eess['Longitud (WGS84)'])
       );

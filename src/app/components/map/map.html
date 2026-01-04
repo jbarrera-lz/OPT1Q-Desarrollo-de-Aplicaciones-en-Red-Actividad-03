@@ -1,0 +1,30 @@
+<!-- @if (petrolStation$ | async; as petrolStation) {
+  <p>
+      JSON DATA Fecha: {{ petrolStation?.Fecha }}
+  </p>
+  <p>
+      Petrol Station Rotulo: {{ petrolStation?.ListaEESSPrecio?.[0]?.['Rótulo'] }}
+  </p>
+
+} @else {
+  <p>Loading...</p>
+} -->
+
+<div class="map-container">
+  <div class="map-frame">
+    <div id="map"></div>
+  </div>
+</div>
+
+<div>
+  <label>Your current position is (latitude, longitude): </label>
+  <output type="string" id="latitude" name="latitude"> {{ (coor$ | async)?.latitude }} </output>
+  <label for="longitude"> , </label>
+  <output type="string" id="longitude" name="longitude"> {{ (coor$ | async)?.longitude }} </output>
+</div>
+
+<div>
+  <label for="radius">Circle Radius (meters): </label>
+  <input type="number" id="radius" name="radius" [(ngModel)]="radius" min="100" max="10000"/>
+  <button (click)="updateCircle()">Update Circle</button>
+</div>

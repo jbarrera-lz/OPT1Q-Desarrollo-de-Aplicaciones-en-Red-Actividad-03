@@ -1,35 +1,51 @@
-import { Component, signal } from '@angular/core';
-import { RouterModule } from '@angular/router';
+import { Component, signal, OnInit } from '@angular/core';
+import { RouterModule, Router, ResolveStart, ResolveEnd } from '@angular/router';
+import { AsyncPipe } from '@angular/common';
+
+import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatToolbarModule } from '@angular/material/toolbar';
+import { map, Observable, filter, merge} from 'rxjs';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterModule],
+  imports: [
+    RouterModule, MatProgressBarModule, 
+    MatToolbarModule, AsyncPipe
+  ],
   template: `
+  <header>
+  </header>
   <main>
-    <header class="header-custom">
-      <div>
-        <a [routerLink]="['/']" class="home-logo">
-          <img src="src/assets/athaka.svg" alt="Home" aria-hidden="true">
-        </a>
-
-        <div class="header-grid">        
-          <a class="github-logo" href="https://github.com/jbarrera-lz">
-            <img src="src/assets/github.svg" alt="GitHub" aria-hidden="true">
-          </a>
-          <a class="linkedin-logo" href="https://linkedin.com/in/josue-b-3662451b3">
-            <img src="src/assets/linkedin.png" alt="LinkedIn" aria-hidden="true">
-          </a>
-        </div>
-
-      </div>
-    </header>
-    <section class="content">
+    @if (isLoading$ | async; as loading) {
+      <mat-progress-bar mode="indeterminate" color="accent" style="position: absolute;">
+      </mat-progress-bar>
+    }
+    <section>
       <router-outlet></router-outlet>
     </section>
   </main>
   `,
   styleUrl: './app.css',
 })
-export class App {
+export class App implements OnInit {
   protected readonly title = signal('Desarrollo de Aplicaciones en Red, Actividad 03.');
+  
+  public isLoading$!: Observable<boolean>;
+  private _showLoaderEvents$!: Observable<boolean>;
+  private _hideLoaderEvents$!: Observable<boolean>;
+  
+  constructor(private router: Router) { }
+
+  ngOnInit(): void {
+    this._showLoaderEvents$ = this.router.events.pipe(
+      filter(event => event instanceof ResolveStart), map(() => true)
+    );
+
+    this._hideLoaderEvents$ = this.router.events.pipe(
+      filter(event => event instanceof ResolveEnd), map(() => false)
+    );
+
+    this.isLoading$ = merge(this._showLoaderEvents$, this._hideLoaderEvents$);
+  }
+
 }

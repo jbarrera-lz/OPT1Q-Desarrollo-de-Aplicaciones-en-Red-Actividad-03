@@ -1,0 +1,66 @@
+export interface PetrolStations {
+    Fecha:             string;
+    ListaEESSPrecio:   ListaEESSPrecio[];
+    Nota:              string;
+    ResultadoConsulta: string;
+}
+
+export interface ListaEESSPrecio {
+    "C.P.":                               string;
+    Dirección:                            string;
+    Horario:                              string;
+    Latitud:                              string;
+    Localidad:                            string;
+    "Longitud (WGS84)":                   string;
+    Margen:                               Margen;
+    Municipio:                            string;
+    "Precio Adblue":                      string;
+    "Precio Amoniaco":                    string;
+    "Precio Biodiesel":                   string;
+    "Precio Bioetanol":                   string;
+    "Precio Biogas Natural Comprimido":   string;
+    "Precio Biogas Natural Licuado":      string;
+    "Precio Diésel Renovable":            string;
+    "Precio Gas Natural Comprimido":      string;
+    "Precio Gas Natural Licuado":         string;
+    "Precio Gases licuados del petróleo": string;
+    "Precio Gasoleo A":                   string;
+    "Precio Gasoleo B":                   string;
+    "Precio Gasoleo Premium":             string;
+    "Precio Gasolina 95 E10":             string;
+    "Precio Gasolina 95 E25":             string;
+    "Precio Gasolina 95 E5":              string;
+    "Precio Gasolina 95 E5 Premium":      string;
+    "Precio Gasolina 95 E85":             string;
+    "Precio Gasolina 98 E10":             string;
+    "Precio Gasolina 98 E5":              string;
+    "Precio Gasolina Renovable":          string;
+    "Precio Hidrogeno":                   string;
+    "Precio Metanol":                     string;
+    Provincia:                            string;
+    Remisión:                             Remisión;
+    Rótulo:                               string;
+    "Tipo Venta":                         TipoVenta;
+    "% BioEtanol":                        string;
+    "% Éster metílico":                   string;
+    IDEESS:                               string;
+    IDMunicipio:                          string;
+    IDProvincia:                          string;
+    IDCCAA:                               string;
+}
+
+export enum Margen {
+    D = "D",
+    I = "I",
+    N = "N",
+}
+
+export enum Remisión {
+    Dm = "dm",
+    Om = "OM",
+}
+
+export enum TipoVenta {
+    P = "P",
+    R = "R",
+}

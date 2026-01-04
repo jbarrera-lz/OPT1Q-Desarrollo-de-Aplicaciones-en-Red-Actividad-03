@@ -1,8 +1,0 @@
-<section class="listing">
-    <img class="listing-photo" [src]="post?.getMainPicture()" [alt]="post?.getPhotoDescription()">
-    <h2 class="listing-heading">{{ post?.name }}</h2>
-    <h3 class="listing-heading">Escrito por {{ post?.author}}</h3>
-    <p class="listing-heading">{{ post?.date }}</p>
-    <p class="listing-location">{{ post?.description }}</p> 
-    <a [routerLink]="['/details', post?.id]">Continúa en</a>
-</section>

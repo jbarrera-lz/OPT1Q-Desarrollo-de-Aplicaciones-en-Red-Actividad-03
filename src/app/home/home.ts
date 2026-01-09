@@ -6,8 +6,9 @@ import { MapComponent } from '../components/map/map';
 @Component({
   selector: 'app-home',
   imports: [
-    CommonModule, MapComponent
-  ],
+    CommonModule, 
+    MapComponent
+],
   templateUrl: './home.html',
   styleUrl: './home.css',
 })

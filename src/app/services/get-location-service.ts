@@ -8,6 +8,9 @@ import { Coordenates } from '../common/coordenates';
 export class GetLocationService {
   private _coordenates: Coordenates | null = null;
 
+  /*------------------------------------*/
+  /* Public Methods
+  /*------------------------------------*/
   public getMyLocation(): Observable<Coordenates | null> {
     return new Observable<Coordenates | null>(
       (myobserver) => {
@@ -36,6 +39,9 @@ export class GetLocationService {
     );
   }
 
+  /*------------------------------------*/
+  /* Getters and Setters
+  /*------------------------------------*/
   public get position() : Coordenates | null {
     console.log(`GetLocationService position accessed. Returning coordinates: ${this._coordenates}`);
     return this._coordenates;

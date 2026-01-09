@@ -1,0 +1,10 @@
+@if(rows.length > 0) {
+  <div>
+    <h3>{{ rows.length }} available Petrol stations within your radius {{ radius }} (meters)</h3>
+    <app-my-generic-table [data]='dataSource' [columns]='columns'></app-my-generic-table>
+  </div>
+ } @else {
+  <div>
+    <h3>No petrol stations available within your radius {{ radius }} (meters)</h3>
+  </div>
+ }

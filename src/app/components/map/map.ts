@@ -7,46 +7,37 @@ import { ActivatedRoute } from '@angular/router';
 import * as L from 'leaflet';
 
 import { Coordenates } from '../../common/coordenates';
-import { PetrolStations } from '../../common/petrolStation';
-import { ListaEESSPrecio } from '../../common/petrolStation';
+import { CurrentLocation } from '../../common/current-location';
+import { EstacionTerrestre } from '../../common/estacion-terrestre';
+import { PetrolStations, ListaEESSPrecio } from '../../common/petrolStation';
 
 import { GetLocationService } from '../../services/get-location-service';
 import { PetrolStationsService } from '../../services/petrol-stations-service';
 
+import { EESSAvailableTable } from '../eessavailable-table/eessavailable-table';
+
 @Component({
   selector: 'app-map-component',
   imports: [
-    AsyncPipe, FormsModule
+    AsyncPipe, FormsModule,
+    EESSAvailableTable
 ],
   templateUrl: './map.html',
   styleUrl: './map.css',
 })
 export class MapComponent implements OnInit {
+
   /*------------------------------------*/
   /*  Members 
   /*------------------------------------*/
   public coor$!: Observable<Coordenates | null>;
   public petrolStation$!: Observable<PetrolStations | null>;
-  
+
   private _map!: L.Map;
-  private _markers: L.Marker[] = [];
-  private _circle!: L.CircleMarker;
-  private _circleRadius: number = 3000; // in meters
+  private _currentLocation!: CurrentLocation;
+  private _stationsAvailable: EstacionTerrestre[] = [];
 
-  private _eess!: ListaEESSPrecio[];
-  private _coor!: Coordenates;
-
-  private readonly _iconPetrolStation = new L.Icon(
-    {
-      iconUrl: 'src/assets/img/local_gas.png',
-      iconSize: [24, 24],
-      iconAnchor: [24, 24],
-      popupAnchor: [0, 0],
-      className: 'gas-station-icon'
-    }
-  )
-
-  private readonly _iconCurrentLocation = new L.Icon.Default;
+  private readonly _tile = new L.TileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png');
 
   /*------------------------------------*/
   /* Constructor
@@ -69,119 +60,85 @@ export class MapComponent implements OnInit {
 
     this._activatedRoute.data.subscribe(
       (data) => {
-        this._coor = data['currentLocation'] ? data['currentLocation'] : null;
-        this._eess = data['petrolStations'] ? data['petrolStations'].ListaEESSPrecio : [];
+        const coor : Coordenates = data['currentLocation'] ? data['currentLocation'] : null;
+        this._currentLocation = new CurrentLocation(coor);
         
+        if (this._currentLocation != null) {
+          console.log(
+            `Fetched by Resolver: [${this._currentLocation.coor.latitude}º, ${this._currentLocation.coor.longitude}º]`
+          );
+        }
+        else {
+          console.error(`currentLocation is 'null'!!!`);
+        }
+        
+        const eessData : ListaEESSPrecio[] = data['petrolStations'] ? data['petrolStations'].ListaEESSPrecio : [];
+        for (var eess of eessData) {
+          const e : EstacionTerrestre = new EstacionTerrestre(eess);
+          this._stationsAvailable.push(e);
+        }
+
         console.log(
-          `Fetched by Resolver: [${this._coor.latitude}º] - [${this._coor.longitude}º] coordenates`
-        );
-        console.log(
-          `Fetched by Resolver ${this._eess.length} petrol stations.`
+          `Fetched by Resolver - ${this._stationsAvailable.length} petrol stations.`
         );
       }
     );
 
-    this.initMap();
-
-    if(this._eess.length > 0) {
-      this.addPetrolStationMarkers();
-    }
+    this.drawMap();
   }
 
   /*------------------------------------*/
   /* Public Methods
   /*------------------------------------*/
-  public updateCircle(): void {   
-    console.log(`Updating circle with radius: ${this.radius}`);
-
-    if(this._circle){
-      this._map.removeLayer(this._circle);
-    }
-    
-    this.drawCircle();
-    this.addPetrolStationMarkers();
+  public updateCircle(r: number): void {  
+    console.log(`Updating circle with radius: ${r} meters.`);
+    this._currentLocation.radius = r;
+    this._map.remove();
+    this.drawMap();
   }
 
   /*------------------------------------*/
   /* Private Methods
   /*------------------------------------*/
-  private initMap(): void { 
-    const baseMapURl = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
-    const latlong = new L.LatLng(this._coor.latitude, this._coor.longitude);
-    const marker = new L.Marker(latlong);
-    const tile = new L.TileLayer(baseMapURl);
-
-    this._markers.push(marker); // Adding the first marker as your current location
-    this._map = L.map('map').setView(latlong, 13);
-    tile.addTo(this._map);
-    marker.addTo(this._map);
-    this.drawCircle();
-  }
-
-  private drawCircle(): void {
-    if (this._map && this.radius > 0) {
-      this._circle = L.circle(this._markers[0].getLatLng(), {
-        color: 'blue',
-        fillColor: '#blue',
-        fillOpacity: 0.1,
-        weight: 0.25,
-        radius: this.radius,
-      });
-      this._circle.addTo(this._map);
+  private drawMap(): void {
+    console.log(`Initializing map...`);
+    if (this._currentLocation != null) {
+      this._map = L.map('map').setView( this._currentLocation.LatLong, 10);
+      this._tile.addTo(this._map);
+      this._currentLocation.marker.addTo(this._map);
+      this._currentLocation.circle.addTo(this._map);
     }
-  }
 
+    if(this._stationsAvailable.length > 0) {
+      this.getPetrolStationsWithinRadius();
 
-  private addPetrolStationMarkers(): void {
-    const stationsWithinCurrentRadius : ListaEESSPrecio[] = this.getPetrolStationsWithinRadius();
-    console.log(`Adding ${stationsWithinCurrentRadius.length} petrol station markers within radius ${this.radius} meters.`);
-    
-    for (const station of stationsWithinCurrentRadius) {
-      const marker = L.marker(
-        [
-          parseFloat(station['Latitud']),
-          parseFloat(station['Longitud (WGS84)'])
-        ],
-        {
-          icon: this._iconPetrolStation,
-          alt: 'Petrol Station Marker',
-          riseOnHover: true,
-          title: `${station['Rótulo']}:
-Localidad: ${station['Localidad']},
-Dirección: ${station['Dirección']},
-Horario: ${station['Horario']}`
-        });
-
-      marker.addTo(this._map);
-      this._markers.push(marker);
-    }
-  }
-
-  private getPetrolStationsWithinRadius(): ListaEESSPrecio[] {
-    const stationsWithinRadius: ListaEESSPrecio[] = [];
-
-    for (const eess of this._eess) {
-      const distancia = MapComponent.calculateDistance(
-        this._coor.latitude,
-        this._coor.longitude,
-        parseFloat(eess['Latitud']),
-        parseFloat(eess['Longitud (WGS84)'])
-      );
-
-      console.log(`Distance to station ${eess['Rótulo']}: ${distancia} meters.`);
-      
-      if (distancia <= this.radius) {
-        stationsWithinRadius.push(eess);
+      for (var i in this._stationsAvailable) {
+        if (this._stationsAvailable[i].drawn) {
+          this._stationsAvailable[i].marker.addTo(this._map);
+        }
       }
     }
-    
-    return stationsWithinRadius;
   }
 
+  private getPetrolStationsWithinRadius(): void { 
+    const lat  : number = this._currentLocation.coor.latitude;
+    const long : number = this._currentLocation.coor.longitude;
+    const r    : number = this._currentLocation.radius;
+
+    for (var i in this._stationsAvailable) {
+      const distance = MapComponent.calculateDistance(
+        lat, long, 
+        this._stationsAvailable[i].latitude,
+        this._stationsAvailable[i].longitude
+      );
+
+      this._stationsAvailable[i].drawn = ( distance <= r ) ? true : false;
+    }
+  }
   /*------------------------------------*/
   /* Static Methods
   /*------------------------------------*/
-  static calculateDistance(lat1: number, lon1: number, lat2: number, lon2: number): number {
+  public static calculateDistance(lat1: number, lon1: number, lat2: number, lon2: number): number {
     const Earth_Radius = 6371e3; // metros
     const phi1 = lat1 * Math.PI/180; // radianes
     const phi2 = lat2 * Math.PI/180; // radianes
@@ -200,11 +157,24 @@ Horario: ${station['Horario']}`
   /*------------------------------------*/
   /* Getters and Setters
   /*------------------------------------*/
-  public get radius(): number {
-    return this._circleRadius; // metros
+  /* currentLocation */
+  public get currentLocation() : CurrentLocation {
+    return this._currentLocation;
   }
 
-  public set radius(value: number) {
-    this._circleRadius = value; // metros
+  /* Get number of estaciones terrestres drawn */
+  public get numero_estaciones_terrestres_dibujadas() : { count: number, available: boolean } {
+    let c : number = 0;
+    for (var i in this._stationsAvailable) {
+      if (this._stationsAvailable[i].drawn) {
+        c++;
+      }
+    }
+    return { count: c, available: c > 0 ? true : false};
+  }
+
+  /* Get Available Stations */
+  public get stationsAvailable() : EstacionTerrestre[] {
+    return this._stationsAvailable;
   }
 }

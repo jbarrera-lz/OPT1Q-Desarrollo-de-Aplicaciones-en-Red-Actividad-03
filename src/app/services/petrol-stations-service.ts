@@ -12,7 +12,10 @@ export class PetrolStationsService {
   
   constructor(private httpClient: HttpClient) { }
 
-  getPetrolStations(): Observable<PetrolStations> {
+  /*------------------------------------*/
+  /* Public Methods
+  /*------------------------------------*/
+  public getPetrolStations(): Observable<PetrolStations> {
     return this.httpClient.get<PetrolStations>(this.apiUrl);
   }
 }

@@ -6,8 +6,9 @@ export class CurrentLocation {
   private _coordenates!: Coordenates;
   private _marker!: L.Marker;
   private _circle!: L.CircleMarker;
-  private _circleRadius: number = 10000; // in meters
-
+  private _circleRadius: number = 2500; // in meters
+  
+  // private readonly _icon = new L.Icon.Default;
   private readonly _icon = new L.Icon(
     {
       iconUrl: 'src/assets/img/person_pin_circle.png',
@@ -18,9 +19,7 @@ export class CurrentLocation {
     }
   )
 
-  constructor(
-    coordenates: Coordenates
-  ) {
+  constructor(coordenates: Coordenates) {
     this._coordenates = coordenates;
     this.circle = coordenates;
     this.marker = coordenates;

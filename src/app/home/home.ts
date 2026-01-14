@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 import { MapComponent } from '../components/map/map';
@@ -6,15 +6,11 @@ import { MapComponent } from '../components/map/map';
 @Component({
   selector: 'app-home',
   imports: [
-    CommonModule, 
-    MapComponent
+    CommonModule, MapComponent
 ],
   templateUrl: './home.html',
   styleUrl: './home.css',
 })
 export class Home {
-
-  constructor() {
-    
-  };
+  constructor() {};
 }

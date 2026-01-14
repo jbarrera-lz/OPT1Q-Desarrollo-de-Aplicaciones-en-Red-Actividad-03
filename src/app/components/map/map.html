@@ -12,8 +12,21 @@
 
 <div>
   <label for="radius">Circle Radius (meters): </label>
-  <input type="number" id="radius" name="radius" [ngModel]="(coor$ | async)?.radius" min="1" max="99999" (ngModelChange)="mapRadius = $event"/>
-  <button (click)="updateCircle()">Update Circle</button>
+  <input type="number" id="radius" name="radius" [ngModel]="(coor$ | async)?.radius" 
+    min="1" max="99999" 
+    (ngModelChange)="mapRadius = $event"
+    (ngModelChange)="updateCircle()"
+  />
 </div>
+<div class="results">
+  @if(this.showCards) {
+    @for (station of (petrolStation$ | async); track station) {
+      @if( station.drawn ) {
+        <app-eess-card [station]='station'></app-eess-card>
+      }
+    }
+  } @else {
+    <p>No Petrol Stations nearby</p>
+  }
 
-<!-- <app-eessavailable-table [radius]="(coor$ | async).radius" [stations]='(petrolStation$ | async)'></app-eessavailable-table> -->
+</div>

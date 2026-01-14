@@ -1,0 +1,15 @@
+<section class="listing">
+    <img class="listing-photo" [src]="station.petrolStationPicture" alt="Exterior photo of {{ station.rotulo }}">
+    <h3 class="listing-heading">{{ station.rotulo }}</h3>
+    <p class="listing-location">{{ station.municipio }}, {{station.localidad }}</p>
+    @if(station.gasolina95E5 != ''){
+        <p>Gasolina 95 E5 - {{ station.gasolina95E5 }} €/litro</p>
+    }
+    @if(station.gasolina95E5E85 != ''){
+        <p>Gasolina 95 E5 E85 - {{ station.gasolina95E5E85 }} €/litro</p>
+    }
+    @if(station.gasolina95E5Premium != ''){
+        <p>Gasolina 95 E5 Premium - {{ station.gasolina95E5Premium }} €/litro</p>
+    }
+</section>
+

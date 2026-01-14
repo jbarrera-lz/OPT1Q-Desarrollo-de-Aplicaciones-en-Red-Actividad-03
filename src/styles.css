@@ -1,0 +1,17 @@
+/* You can add global styles to this file, and also import other style files */
+* {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Lato', sans-serif;
+  height: 100vh;
+  width: 100%;
+}
+:root {
+  --primary-color: #1A237E;
+  --secondary-color: 255, 255, 255;
+  --accent-color: #5C6BC0;
+  --shadow-color: #000000;
+}

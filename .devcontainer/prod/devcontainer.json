@@ -1,0 +1,22 @@
+{
+    "name": "UNIR-Gii-prod",
+    "dockerComposeFile": [
+        "../../Docker/docker-compose.prod.yaml"
+    ],
+    "service": "web",
+    "workspaceFolder": "/etc/nginx",
+    "remoteUser": "root",
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "redhat.vscode-yaml",
+                "mechatroner.rainbow-csv",
+                "jasonnutter.search-node-modules",
+                "chris-noring.node-snippets",
+                "aykutsarac.jsoncrack-vscode",
+                "angular.ng-template"
+
+            ]
+        }
+    }
+}

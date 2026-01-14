@@ -1,0 +1,57 @@
+##------------------------------------------------##
+##              Anchors definitions               ##
+##------------------------------------------------##
+x-logging: &logging
+    logging:
+        driver: "json-file"
+        options:
+            max-size: 10m
+            max-file: "3"
+            compress: "true"
+
+x-network: &unir-network
+    networks:
+        - unir
+
+x-envfiles: &env-files
+    env_file:
+        - env
+
+##------------------------------------------------##
+##             Networks definitions               ##
+##------------------------------------------------##
+networks:
+  unir:
+    driver: bridge
+
+##------------------------------------------------##
+##             Services definitions               ##
+##------------------------------------------------##
+services:
+  proxy:
+    <<: [*logging, *unir-network, *env-files]
+    image: docker.io/nginx:stable-alpine3.21-slim
+    ports:
+      - 80:80/tcp
+      - 443:443/tcp
+    container_name: proxy
+    hostname: proxy
+    restart: unless-stopped
+    volumes:
+      - ../nginx/unir.tutorial.conf:/etc/nginx/sites-enabled/unir.tutorial.conf:rw
+      - ../nginx/unir.development.key:/etc/nginx/unir.development.key:rw
+      - ../nginx/unir.development.crt:/etc/nginx/unir.development.crt:rw
+      - ../nginx/nginx.conf:/etc/nginx/nginx.conf:rw
+
+  web:
+    <<: [*logging, *unir-network, *env-files]
+    volumes:
+      - ../:/workspace/:rw
+    environment: {}
+    container_name: web
+    hostname: web
+    image: docker.io/node:25.2.1
+    restart: unless-stopped
+    stdin_open: true
+    ports:
+      - 4200/tcp

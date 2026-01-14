@@ -1,0 +1,20 @@
+openssl genrsa -out ca.key 4096
+
+openssl req -x509 -new -nodes -sha512 -days 3650 -subj "/C=CN/ST=Spain/L=Spain/O=European Solar Telescope/CN=*.est.iac.es" -key ca.key -out ca.crt
+
+openssl genrsa -out est.iac.es.key 4096
+
+openssl req -sha512 -new -subj "/C=CN/ST=Spain/L=Spain/O=European Solar Telescope/CN=*.est.iac.es" -key est.iac.es.key -out est.iac.es.csr
+
+openssl x509 -req -sha512 -days 3650 -extfile v3_est.ext -CA ca.crt -CAkey ca.key -CAcreateserial -in est.iac.es.csr -out est.iac.es.crt
+
+openssl x509 -inform PEM -in est.iac.es.crt -out est.iac.es.cert
+
+------------------
+openssl genrsa -out ca.key 4096
+openssl req -x509 -new -nodes -sha512 -days 365 -key ca.key -out ca.crt -config v3_unir.ext
+openssl genrsa -out unir.development.key 4096
+openssl req -new -nodes -key unir.development.key -config v3_unir.ext -out unir.development.csr
+openssl req -noout -text -in unir.development.csr
+openssl x509 -req -sha512 -days 365 -extfile v3_unir.ext -CA ca.crt -CAkey ca.key -CAcreateserial -in unir.development.csr -out unir.development.crt -extensions req_ext
+openssl x509 -inform PEM -in unir.development.crt -out unir.development.cert

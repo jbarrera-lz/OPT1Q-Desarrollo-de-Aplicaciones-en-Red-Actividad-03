@@ -1,32 +1,152 @@
-<div class="map-container">
-  <div class="map-frame">
-    <div id="map"></div>
+<section class="input-section">
+
+  <!-- Mapa -->
+  <div class="map-container">
+    <div class="map-frame">
+      <div id="map"></div>
+    </div>
   </div>
-</div>
 
-<div>
-  <label>Your current position is (latitude, longitude): </label>
-  <output type="string" id="latitude" name="latitude"> {{ (coor$ | async)?.coor?.latitude }}º </output>
-  <output type="string" id="longitude" name="longitude"> {{ (coor$ | async)?.coor?.longitude }}º </output>
-</div>
+  <!-- Posición actual -->
+  <div class="current-position">
+    <label>Tu posición actual es (latitud, longitud):</label>
+    <output id="latitude" name="latitude">
+      {{ (coor$ | async)?.coor?.latitude }}º
+    </output>
+    <output id="longitude" name="longitude">
+      {{ (coor$ | async)?.coor?.longitude }}º
+    </output>
+  </div>
 
-<div>
-  <label for="radius">Circle Radius (meters): </label>
-  <input type="number" id="radius" name="radius" [ngModel]="(coor$ | async)?.radius" 
-    min="1" max="99999" 
-    (ngModelChange)="mapRadius = $event"
-    (ngModelChange)="updateCircle()"
-  />
-</div>
-<div class="results">
-  @if(this.showCards) {
-    @for (station of (petrolStation$ | async); track station) {
-      @if( station.drawn ) {
-        <app-eess-card [station]='station'></app-eess-card>
-      }
+  <!-- Radio del círculo -->
+  <div class="radius-input">
+    <label for="radius">Radio del círculo (metros):</label>
+    <input
+      type="number"
+      id="radius"
+      name="radius"
+      [ngModel]="(coor$ | async)?.radius"
+      min="1"
+      max="99999"
+      (ngModelChange)="mapRadius = $event; updateCircle(); updateShowCards()"
+    />
+  </div>
+
+  <!-- Coordenadas manuales -->
+  <div class="manual-input">
+    <h3>Introducir coordenadas manualmente</h3>
+
+    <label for="manualLat">Latitud:</label>
+    <input
+      id="manualLat"
+      type="number"
+      [(ngModel)]="manualLat"
+      step="0.000001"
+    />
+
+    <label for="manualLon">Longitud:</label>
+    <input
+      id="manualLon"
+      type="number"
+      [(ngModel)]="manualLon"
+      step="0.000001"
+    />
+
+    <button type="button" (click)="useManualLocation()">
+      Usar coordenadas
+    </button>
+  </div>
+
+  <!-- Filtros -->
+  <div class="filters">
+    <h3>Filtros</h3>
+
+    <!-- Tipo de carburante -->
+    <label for="fuelType">Tipo de carburante:</label>
+    <select id="fuelType" [(ngModel)]="selectedFuelType">
+      <option [ngValue]="null">Todos</option>
+
+      <!-- Valores alineados con getters de EstacionTerrestre -->
+      <option value="gasolina95E5">Gasolina 95 E5</option>
+      <option value="gasolina95E5Premium">Gasolina 95 E5 Premium</option>
+      <option value="gasolina95E5E85">Gasolina 95 E85</option>
+      <option value="gasolina98E5">Gasolina 98 E5</option>
+      <option value="gasolina98E10">Gasolina 98 E10</option>
+
+      <option value="gasoleoA">Gasóleo A</option>
+      <option value="gasoleoPremium">Gasóleo A Premium</option>
+      <option value="gasoleoB">Gasóleo B</option>
+
+      <option value="glp">GLP</option>
+      <option value="gnc">GNC</option>
+      <option value="gnl">GNL</option>
+
+      <option value="adblue">AdBlue</option>
+    </select>
+
+    <!-- Lista blanca de marcas -->
+    <label for="includeBrands">
+      Solo marcas (lista blanca, separadas por comas):
+    </label>
+    <input
+      id="includeBrands"
+      type="text"
+      [(ngModel)]="includeBrands"
+      placeholder="Repsol, Cepsa, Shell"
+    />
+
+    <!-- Lista negra de marcas -->
+    <label for="excludeBrands">
+      Excluir marcas (lista negra, separadas por comas):
+    </label>
+    <input
+      id="excludeBrands"
+      type="text"
+      [(ngModel)]="excludeBrands"
+      placeholder="LowCostX, MarcaY"
+    />
+
+    <button type="button" (click)="applyFilters()">
+      Aplicar filtros
+    </button>
+  </div>
+
+</section>
+
+<section class="output-section">
+
+  <h2>Resultados</h2>
+
+  <!-- Resumen: más cercana y más barata -->
+  <div class="summary">
+    @if (nearestStation) {
+      <p>
+        Gasolinera más cercana:
+        <strong>{{ nearestStation.rotulo }}</strong>
+        ({{ nearestStation.municipio }} - {{ nearestStation.localidad }})
+      </p>
     }
-  } @else {
-    <p>No Petrol Stations nearby</p>
-  }
 
-</div>
+    @if (cheapestStation && selectedFuelType) {
+      <p>
+        Gasolinera más barata para
+        <strong>{{ selectedFuelType }}</strong>:
+        <strong>{{ cheapestStation.rotulo }}</strong>
+        –
+        {{ $any(cheapestStation)[selectedFuelType] }} €/L
+      </p>
+    }
+  </div>
+
+  <!-- Listado de gasolineras -->
+  <div class="results">
+    @if (visibleStations.length > 0) {
+      @for (station of visibleStations; track station) {
+        <app-eess-card [station]="station"></app-eess-card>
+      }
+    } @else {
+      <p>No hay gasolineras que cumplan los filtros en este radio.</p>
+    }
+  </div>
+
+</section>

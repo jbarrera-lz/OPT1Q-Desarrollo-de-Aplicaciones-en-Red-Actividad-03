@@ -91,6 +91,42 @@ export class EstacionTerrestre {
   public get longitude() : number {
     return this._coordenates['longitude'];
   }
+    public get isOpenNow(): boolean {
+    const timetable: string = this._timetable || '';
+    if (!timetable) return false;
+
+    const normalized = timetable.trim().toLowerCase();
+
+    // 1) Casos tipo "24H", "24 H", "24 HORAS", etc. → siempre abierta
+    if (
+      normalized.includes('24h') ||
+      normalized.includes('24 h') ||
+      normalized.includes('24 horas') ||
+      normalized.includes('24horas')
+    ) {
+      return true;
+    }
+
+    // 2) Intentamos encontrar un rango horario HH:MM-HH:MM
+    const match = timetable.match(/(\d{2}):(\d{2})\s*-\s*(\d{2}):(\d{2})/);
+    if (!match) return false;
+
+    const now = new Date();
+    const hour = now.getHours() + now.getMinutes() / 60;
+
+    const openHour = parseInt(match[1], 10) + parseInt(match[2], 10) / 60;
+    const closeHour = parseInt(match[3], 10) + parseInt(match[4], 10) / 60;
+
+    // 3) Si el cierre es menor que la apertura, asumimos horario nocturno (ej. 22:00-06:00)
+    if (closeHour < openHour) {
+      // Abre por la noche: está abierta si es >= apertura o <= cierre
+      return hour >= openHour || hour <= closeHour;
+    }
+
+    // 4) Horario normal dentro del mismo día
+    return hour >= openHour && hour <= closeHour;
+  }
+
 
   /** Location Marker */
   public set marker(eessData : ListaEESSPrecio) {

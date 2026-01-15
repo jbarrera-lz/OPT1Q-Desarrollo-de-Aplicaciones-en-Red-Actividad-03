@@ -40,7 +40,12 @@ export class CurrentLocation {
       this._coordenates.longitude
     ];
   }
-
+  // actualizar coordenadas manualmente
+  public updateCoordenates(lat: number, lon: number): void {
+    this._coordenates = { latitude: lat, longitude: lon };
+    this.marker = this._coordenates;
+    this.circle = this._coordenates;
+  }
   /** Location Marker */
   public set marker(coordenates: Coordenates) {
     this._marker = new L.Marker(

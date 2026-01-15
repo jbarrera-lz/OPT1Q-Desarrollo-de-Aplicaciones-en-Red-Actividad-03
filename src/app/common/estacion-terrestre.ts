@@ -90,7 +90,8 @@ export class EstacionTerrestre {
   public get longitude() : number {
     return this._coordenates['longitude'];
   }
-    public get isOpenNow(): boolean {
+
+  public get isOpenNow(): boolean {
     const timetable: string = this._timetable || '';
     if (!timetable) return false;
 
@@ -125,7 +126,6 @@ export class EstacionTerrestre {
     // 4) Horario normal dentro del mismo día
     return hour >= openHour && hour <= closeHour;
   }
-
 
   /** Location Marker */
   public set marker(eessData : ListaEESSPrecio) {

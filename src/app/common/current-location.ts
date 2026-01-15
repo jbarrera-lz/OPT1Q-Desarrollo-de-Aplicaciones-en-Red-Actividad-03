@@ -6,7 +6,7 @@ export class CurrentLocation {
   private _coordenates!: Coordenates;
   private _marker!: L.Marker;
   private _circle!: L.CircleMarker;
-  private _circleRadius: number = 2500; // in meters
+  private _circleRadius: number = 1000; // in meters
   
   // private readonly _icon = new L.Icon.Default;
   private readonly _icon = new L.Icon(

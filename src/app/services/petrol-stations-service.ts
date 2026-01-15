@@ -105,57 +105,55 @@ public updateRadiusKm(r: number): void {
   }
 
   public getCurrentCoordenates(): Observable<CurrentLocation> {
-  return new Observable<CurrentLocation>((obs) => {
-    console.log(`Running getCurrentCoordenates`);
+    return new Observable<CurrentLocation>((obs) => {
+      console.log(`Running getCurrentCoordenates`);
 
-    // Localización por defecto (Madrid km 0)
-    let loc: CurrentLocation = new CurrentLocation(madrid_km_0);
+      // Localización por defecto (Madrid km 0)
+      let loc: CurrentLocation = new CurrentLocation(madrid_km_0);
 
-    // Si el navegador no soporta geolocalización, devolvemos directamente el fallback
-    if (!('geolocation' in navigator)) {
-      console.warn('Geolocation not supported, using fallback location.');
-      this._location.next(loc);
-      this.updateDrawnMarks();
-      obs.next(loc);
-      obs.complete();
-      return;
-    }
-
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        if (position) {
-          loc = new CurrentLocation({
-            latitude: position.coords.latitude,
-            longitude: position.coords.longitude,
-          });
-        }
-
-        // Actualizamos el BehaviorSubject global
+      // Si el navegador no soporta geolocalización, devolvemos directamente el fallback
+      if (!('geolocation' in navigator)) {
+        console.warn('Geolocation not supported, using fallback location.');
         this._location.next(loc);
         this.updateDrawnMarks();
-
-        // Devolvemos la localización (éxito)
         obs.next(loc);
         obs.complete();
-      },
-      (error) => {
-        console.error(`Error obtaining geolocation: ${error.message}`);
-
-        // Fallback: usamos Madrid (o lo que quieras) pero EMITIMOS igual
-        this._location.next(loc);
-        this.updateDrawnMarks();
-
-        obs.next(loc);
-        obs.complete();
-      },
-      {
-        timeout: 5000, // opcional, por si se queda colgado el GPS
+        return;
       }
-    );
-  });
-}
 
-  
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          if (position) {
+            loc = new CurrentLocation({
+              latitude: position.coords.latitude,
+              longitude: position.coords.longitude,
+            });
+          }
+
+          // Actualizamos el BehaviorSubject global
+          this._location.next(loc);
+          this.updateDrawnMarks();
+
+          // Devolvemos la localización (éxito)
+          obs.next(loc);
+          obs.complete();
+        },
+        (error) => {
+          console.error(`Error obtaining geolocation: ${error.message}`);
+
+          // Fallback: usamos Madrid (o lo que quieras) pero EMITIMOS igual
+          this._location.next(loc);
+          this.updateDrawnMarks();
+
+          obs.next(loc);
+          obs.complete();
+        },
+        {
+          timeout: 5000, // opcional, por si se queda colgado el GPS
+        }
+      );
+    });
+  }
 
   /*------------------------------------*/
   /* Private Methods
@@ -178,7 +176,7 @@ public updateRadiusKm(r: number): void {
     return Earth_Radius * c; // metros
   }
 
-    private updateDrawnMarks() {
+  private updateDrawnMarks() {
     const r = this._location.getValue().radius; // metros
     const eess = this._stationsAvailable.getValue();
     const [lat0, lon0] = this.coordenates;
@@ -205,21 +203,21 @@ public updateRadiusKm(r: number): void {
           visible = false;
         }
       }
-
+  
       // 4) filtro por tipo de carburante (que tenga precio en ese campo)
       if (visible && this._fuelType) {
-        const priceStr = (station as any)[this._fuelType] as string;
-        if (!priceStr || priceStr.trim() === '') {
+        // const priceStr = (station as any)[this._fuelType] as string;
+        // if (!priceStr || priceStr.trim() === '') {
+        //   visible = false;
+        // }
+        if (!(station as any)[this._fuelType][1]) {
           visible = false;
         }
       }
-
       station.drawn = visible;
     }
-
     this._stationsAvailable.next(eess);
   }
-
 
   private get coordenates() : [ number, number ] {
     return this._location.getValue().LatLong;

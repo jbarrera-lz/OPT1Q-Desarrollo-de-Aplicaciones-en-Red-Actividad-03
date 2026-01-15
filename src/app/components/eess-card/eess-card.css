@@ -20,7 +20,7 @@
   content: url("/assets/img/location_on.svg");
 }
 .listing-price {
-  padding: 10px 20px 20px 20px;
+  color: var(--primary-color);
 }
 
 section.listing a {

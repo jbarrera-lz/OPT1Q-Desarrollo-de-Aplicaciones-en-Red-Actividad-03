@@ -13,7 +13,7 @@ export class CurrentLocation {
     {
       iconUrl: 'src/assets/img/person_pin_circle.svg',
       iconSize: [48, 48],
-      iconAnchor: [48, 48],
+      iconAnchor: [0, 0],
       popupAnchor: [0, 0],
       className: 'your-current-location-icon'
     }

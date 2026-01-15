@@ -56,8 +56,10 @@ export class MapComponent implements OnInit {
       }
     );
 
-    this._petrolStationsService.radius = this.coor$.getValue().radius;
+    // this._petrolStationsService.radius = this.coor$.getValue().radius;
+    this.mapRadius = this.coor$.getValue().radius;
     this.drawMap();
+    this.updateCircle();
   }
 
   /*------------------------------------*/
@@ -99,11 +101,14 @@ export class MapComponent implements OnInit {
     coor.circle.addTo(this._map);
 
     console.log(`Current stations available: ${this.petrolStation$.getValue().length}`);
-
+    var markergroup : L.Marker[]= [];
     for (var station of this.petrolStation$.getValue()) {
       if(station.drawn) {
-        station.marker.addTo(this._map);
+        markergroup.push(station.marker);
       }
     }
+    var layergroup : L.LayerGroup = L.layerGroup(markergroup);
+    console.log(layergroup);
+    layergroup.addTo(this._map);
   }
 }

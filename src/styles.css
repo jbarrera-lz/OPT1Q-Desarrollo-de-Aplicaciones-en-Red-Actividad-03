@@ -11,8 +11,8 @@ body {
 }
 
 :root {
-  --primary-color: #000000;
+  --primary-color: #0d49ff;
   --secondary-color: 255, 255, 255;
-  --accent-color: #d7e8b0;
+  --accent-color: #c9daf0;
   --shadow-color: #000000;
 }

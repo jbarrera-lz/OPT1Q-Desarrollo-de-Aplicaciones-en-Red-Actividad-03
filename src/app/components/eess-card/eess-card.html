@@ -1,5 +1,4 @@
 <section class="listing">
-
   <!-- Foto -->
   <img
     class="listing-photo"
@@ -38,55 +37,54 @@
   <!-- Precios carburantes -->
   <div class="fuel-prices">
 
-    @if (station.gasolina95E5 !== '') {
-      <p>Gasolina 95 E5: <strong>{{ station.gasolina95E5 }}</strong> €/L</p>
+    @if(!station.gasolina95E5[1]) {
+      <p>Gasolina 95 E5: <strong>{{ station.gasolina95E5[0] }}</strong> €/L</p>
     }
 
-    @if (station.gasolina95E5Premium !== '') {
-      <p>Gasolina 95 E5 Premium: <strong>{{ station.gasolina95E5Premium }}</strong> €/L</p>
+    @if(!station.gasolina95E5Premium[1]) {
+      <p>Gasolina 95 E5 Premium: <strong>{{ station.gasolina95E5Premium[0] }}</strong> €/L</p>
     }
 
-    @if (station.gasolina95E5E85 !== '') {
-      <p>Gasolina 95 E85: <strong>{{ station.gasolina95E5E85 }}</strong> €/L</p>
+    @if(!station.gasolina95E5E85[1]) {
+      <p>Gasolina 95 E85: <strong>{{ station.gasolina95E5E85[0] }}</strong> €/L</p>
     }
 
-    @if (station.gasolina98E5 !== '') {
-      <p>Gasolina 98 E5: <strong>{{ station.gasolina98E5 }}</strong> €/L</p>
+    @if(!station.gasolina98E5[1]) {
+      <p>Gasolina 98 E5: <strong>{{ station.gasolina98E5[0] }}</strong> €/L</p>
     }
 
-    @if (station.gasolina98E10 !== '') {
-      <p>Gasolina 98 E10: <strong>{{ station.gasolina98E10 }}</strong> €/L</p>
+    @if(!station.gasolina98E10[1]) {
+      <p>Gasolina 98 E10: <strong>{{ station.gasolina98E10[0] }}</strong> €/L</p>
     }
 
-    @if (station.gasoleoA !== '') {
-      <p>Gasóleo A: <strong>{{ station.gasoleoA }}</strong> €/L</p>
+    @if(!station.gasoleoA[1]) {
+      <p>Gasóleo A: <strong>{{ station.gasoleoA[0] }}</strong> €/L</p>
     }
 
-    @if (station.gasoleoPremium !== '') {
-      <p>Gasóleo Premium: <strong>{{ station.gasoleoPremium }}</strong> €/L</p>
+    @if(!station.gasoleoPremium[1]) {
+      <p>Gasóleo Premium: <strong>{{ station.gasoleoPremium[0] }}</strong> €/L</p>
     }
 
-    @if (station.gasoleoB !== '') {
-      <p>Gasóleo B: <strong>{{ station.gasoleoB }}</strong> €/L</p>
+    @if(!station.gasoleoB[1]) {
+      <p>Gasóleo B: <strong>{{ station.gasoleoB[0] }}</strong> €/L</p>
     }
 
-    @if (station.glp !== '') {
-      <p>GLP: <strong>{{ station.glp }}</strong> €/L</p>
+    @if(!station.glp[1]) {
+      <p>GLP: <strong>{{ station.glp[0] }}</strong> €/L</p>
     }
 
-    @if (station.gnc !== '') {
-      <p>GNC: <strong>{{ station.gnc }}</strong> €/kg</p>
+    @if(!station.gnc[1]) {
+      <p>GNC: <strong>{{ station.gnc[0] }}</strong> €/kg</p>
     }
 
-    @if (station.gnl !== '') {
-      <p>GNL: <strong>{{ station.gnl }}</strong> €/kg</p>
+    @if(!station.gnl[1]) {
+      <p>GNL: <strong>{{ station.gnl[0] }}</strong> €/kg</p>
     }
 
-    @if (station.adblue !== '') {
-      <p>AdBlue: <strong>{{ station.adblue }}</strong> €/L</p>
+    @if(!station.adblue[1]) {
+      <p>AdBlue: <strong>{{ station.adblue[0] }}</strong> €/L</p>
     }
 
   </div>
 
 </section>
-

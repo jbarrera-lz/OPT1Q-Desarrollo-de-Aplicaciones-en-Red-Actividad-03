@@ -6,14 +6,14 @@ export class CurrentLocation {
   private _coordenates!: Coordenates;
   private _marker!: L.Marker;
   private _circle!: L.CircleMarker;
-  private _circleRadius: number = 2500; // in meters
+  private _circleRadius: number = 1000; // in meters
   
   // private readonly _icon = new L.Icon.Default;
   private readonly _icon = new L.Icon(
     {
       iconUrl: 'src/assets/img/person_pin_circle.svg',
       iconSize: [48, 48],
-      iconAnchor: [48, 48],
+      iconAnchor: [0, 0],
       popupAnchor: [0, 0],
       className: 'your-current-location-icon'
     }

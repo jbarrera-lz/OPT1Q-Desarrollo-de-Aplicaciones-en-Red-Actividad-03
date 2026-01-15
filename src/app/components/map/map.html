@@ -62,53 +62,62 @@
     <h3>Filtros</h3>
 
     <!-- Tipo de carburante -->
-    <label for="fuelType">Tipo de carburante:</label>
-    <select id="fuelType" [(ngModel)]="selectedFuelType">
-      <option [ngValue]="null">Todos</option>
+    <div>
+      <label for="fuelType">Tipo de carburante:</label>
+      <select id="fuelType" [(ngModel)]="selectedFuelType">
+        <option [ngValue]="null">Todos</option>
 
-      <!-- Valores alineados con getters de EstacionTerrestre -->
-      <option value="gasolina95E5">Gasolina 95 E5</option>
-      <option value="gasolina95E5Premium">Gasolina 95 E5 Premium</option>
-      <option value="gasolina95E5E85">Gasolina 95 E85</option>
-      <option value="gasolina98E5">Gasolina 98 E5</option>
-      <option value="gasolina98E10">Gasolina 98 E10</option>
+        <!-- Valores alineados con getters de EstacionTerrestre -->
+        <option value="gasolina95E5">Gasolina 95 E5</option>
+        <option value="gasolina95E5Premium">Gasolina 95 E5 Premium</option>
+        <option value="gasolina95E5E85">Gasolina 95 E85</option>
+        <option value="gasolina98E5">Gasolina 98 E5</option>
+        <option value="gasolina98E10">Gasolina 98 E10</option>
 
-      <option value="gasoleoA">Gasóleo A</option>
-      <option value="gasoleoPremium">Gasóleo A Premium</option>
-      <option value="gasoleoB">Gasóleo B</option>
+        <option value="gasoleoA">Gasóleo A</option>
+        <option value="gasoleoPremium">Gasóleo A Premium</option>
+        <option value="gasoleoB">Gasóleo B</option>
 
-      <option value="glp">GLP</option>
-      <option value="gnc">GNC</option>
-      <option value="gnl">GNL</option>
+        <option value="glp">GLP</option>
+        <option value="gnc">GNC</option>
+        <option value="gnl">GNL</option>
 
-      <option value="adblue">AdBlue</option>
-    </select>
+        <option value="adblue">AdBlue</option>
+      </select>
+    </div>
 
     <!-- Lista blanca de marcas -->
-    <label for="includeBrands">
-      Solo marcas (lista blanca, separadas por comas):
-    </label>
-    <input
-      id="includeBrands"
-      type="text"
-      [(ngModel)]="includeBrands"
-      placeholder="Repsol, Cepsa, Shell"
-    />
+    <div>
+      <label for="includeBrands">
+        Solo marcas (lista blanca, separadas por comas):
+      </label>
+      <input
+        id="includeBrands"
+        type="text"
+        [(ngModel)]="includeBrands"
+        placeholder="Repsol, Cepsa, Shell"
+      />
+    </div>
+
 
     <!-- Lista negra de marcas -->
-    <label for="excludeBrands">
-      Excluir marcas (lista negra, separadas por comas):
-    </label>
-    <input
-      id="excludeBrands"
-      type="text"
-      [(ngModel)]="excludeBrands"
-      placeholder="LowCostX, MarcaY"
-    />
-
-    <button type="button" (click)="applyFilters()">
-      Aplicar filtros
-    </button>
+    <div>
+      <label for="excludeBrands">
+        Excluir marcas (lista negra, separadas por comas):
+      </label>
+      <input
+        id="excludeBrands"
+        type="text"
+        [(ngModel)]="excludeBrands"
+        placeholder="LowCostX, MarcaY"
+      />
+    </div>
+    
+    <div>
+      <button type="button" (click)="applyFilters()">
+        Aplicar filtros
+      </button>
+    </div>
   </div>
 
 </section>
@@ -122,8 +131,7 @@
     @if (nearestStation) {
       <p>
         Gasolinera más cercana:
-        <strong>{{ nearestStation.rotulo }}</strong>
-        ({{ nearestStation.municipio }} - {{ nearestStation.localidad }})
+        <strong>{{ nearestStation.rotulo }}</strong> ({{ nearestStation.municipio }} - {{ nearestStation.localidad }})
       </p>
     }
 
@@ -131,9 +139,7 @@
       <p>
         Gasolinera más barata para
         <strong>{{ selectedFuelType }}</strong>:
-        <strong>{{ cheapestStation.rotulo }}</strong>
-        –
-        {{ $any(cheapestStation)[selectedFuelType] }} €/L
+        <p><strong>{{ cheapestStation.rotulo }}</strong> – {{ $any(cheapestStation)[selectedFuelType][0] }} €/L
       </p>
     }
   </div>

@@ -17,27 +17,27 @@ export class EstacionTerrestre {
   private _county: string = "";
 
   // Precios combustibles más comúnes
-  private  "Precio Adblue":                      string = "";
-  private  "Precio Gas Natural Comprimido":      string = "";
-  private  "Precio Gas Natural Licuado":         string = "";
-  private  "Precio Gases licuados del petróleo": string = "";
-  private  "Precio Gasoleo A":                   string = "";
-  private  "Precio Gasoleo B":                   string = "";
-  private  "Precio Gasoleo Premium":             string = "";
-  private  "Precio Gasolina 95 E10":             string = "";
-  private  "Precio Gasolina 95 E25":             string = "";
-  private  "Precio Gasolina 95 E5":              string = "";
-  private  "Precio Gasolina 95 E5 Premium":      string = "";
-  private  "Precio Gasolina 95 E85":             string = "";
-  private  "Precio Gasolina 98 E10":             string = "";
-  private  "Precio Gasolina 98 E5":              string = "";
+  private  "Precio Adblue":                      number = NaN;
+  private  "Precio Gas Natural Comprimido":      number = NaN;
+  private  "Precio Gas Natural Licuado":         number = NaN;
+  private  "Precio Gases licuados del petróleo": number = NaN;
+  private  "Precio Gasoleo A":                   number = NaN;
+  private  "Precio Gasoleo B":                   number = NaN;
+  private  "Precio Gasoleo Premium":             number = NaN;
+  private  "Precio Gasolina 95 E10":             number = NaN;
+  private  "Precio Gasolina 95 E25":             number = NaN;
+  private  "Precio Gasolina 95 E5":              number = NaN;
+  private  "Precio Gasolina 95 E5 Premium":      number = NaN;
+  private  "Precio Gasolina 95 E85":             number = NaN;
+  private  "Precio Gasolina 98 E10":             number = NaN;
+  private  "Precio Gasolina 98 E5":              number = NaN;
 
   
   private readonly _iconPetrolStation = new L.Icon(
     {
       iconUrl: 'src/assets/img/local_gas.svg',
       iconSize: [24, 24],
-      iconAnchor: [24, 24],
+      iconAnchor: [0, 0],
       popupAnchor: [0, 0],
       className: 'gas-station-icon'
     }
@@ -45,8 +45,8 @@ export class EstacionTerrestre {
   
   constructor(eessData: ListaEESSPrecio) {
     this._coordenates = {
-      latitude: parseFloat(eessData['Latitud']),
-      longitude: parseFloat(eessData['Longitud (WGS84)'])
+      latitude: parseFloat(eessData['Latitud'].replace(',','.')),
+      longitude: parseFloat(eessData['Longitud (WGS84)'].replace(',','.'))
     };
     this._address = eessData['Dirección'];
     this._timetable = eessData['Horario'];
@@ -54,21 +54,20 @@ export class EstacionTerrestre {
     this._rotulo = eessData['Rótulo'];
     this._council = eessData['Municipio'];
     this._county = eessData['Provincia'];
-    this["Precio Adblue"] = eessData['Precio Adblue'];
-    this["Precio Gas Natural Comprimido"] = eessData['Precio Gas Natural Comprimido'];
-    this["Precio Gas Natural Licuado"] = eessData['Precio Gas Natural Licuado'];
-    this["Precio Gases licuados del petróleo"] = eessData['Precio Gases licuados del petróleo'];
-    this["Precio Gasoleo A"] = eessData['Precio Gasoleo A'];
-    this["Precio Gasoleo B"] = eessData['Precio Gasoleo B'];
-    this["Precio Gasoleo Premium"] = eessData['Precio Gasoleo Premium'];
-    this["Precio Gasolina 95 E10"] = eessData['Precio Gasolina 95 E10'];
-    this["Precio Gasolina 95 E25"] = eessData['Precio Gasolina 95 E25'];
-    this["Precio Gasolina 95 E5"] = eessData['Precio Gasolina 95 E5'];
-    this["Precio Gasolina 95 E5 Premium"] = eessData['Precio Gasolina 95 E5 Premium'];
-    this["Precio Gasolina 95 E85"] = eessData['Precio Gasolina 95 E85'];
-    this["Precio Gasolina 98 E10"] = eessData['Precio Gasolina 98 E10'];
-    this["Precio Gasolina 98 E5"] = eessData['Precio Gasolina 98 E5'];
-
+    this.adblue = eessData['Precio Adblue'];
+    this.gnc = eessData['Precio Gas Natural Comprimido'];
+    this.gnl = eessData['Precio Gas Natural Licuado'];
+    this.glp = eessData['Precio Gases licuados del petróleo'];
+    this.gasoleoA = eessData['Precio Gasoleo A'];
+    this.gasoleoB = eessData['Precio Gasoleo B'];
+    this.gasoleoPremium = eessData['Precio Gasoleo Premium'];
+    this.gasolina95e10 = eessData['Precio Gasolina 95 E10'];
+    this.gasolina95e25 = eessData['Precio Gasolina 95 E25'];
+    this.gasolina95E5 = eessData['Precio Gasolina 95 E5'];
+    this.gasolina95E5Premium = eessData['Precio Gasolina 95 E5 Premium'];
+    this.gasolina95E5E85 = eessData['Precio Gasolina 95 E85'];
+    this.gasolina98E10 = eessData['Precio Gasolina 98 E10'];
+    this.gasolina98E5 = eessData['Precio Gasolina 98 E5'];
     this.marker = eessData;
   }
 
@@ -79,8 +78,8 @@ export class EstacionTerrestre {
 
   public get LatLong() : [ number, number ] {
     return [ 
-        this._coordenates['latitude'],
-        this._coordenates['longitude'] 
+        this._coordenates.latitude,
+        this._coordenates.longitude 
     ];
   }
 
@@ -91,7 +90,8 @@ export class EstacionTerrestre {
   public get longitude() : number {
     return this._coordenates['longitude'];
   }
-    public get isOpenNow(): boolean {
+
+  public get isOpenNow(): boolean {
     const timetable: string = this._timetable || '';
     if (!timetable) return false;
 
@@ -127,13 +127,12 @@ export class EstacionTerrestre {
     return hour >= openHour && hour <= closeHour;
   }
 
-
   /** Location Marker */
   public set marker(eessData : ListaEESSPrecio) {
     this._marker = new L.Marker(
       [
-        parseFloat(eessData['Latitud']),
-        parseFloat(eessData['Longitud (WGS84)'])
+        parseFloat(eessData['Latitud'].replace(',','.')),
+        parseFloat(eessData['Longitud (WGS84)'].replace(',','.'))
       ],
       {
         icon: this._iconPetrolStation,
@@ -179,59 +178,159 @@ Localidad: ${this.localidad}`
     return this._county;
   }
 
-  public get adblue() : string {
-    return this['Precio Adblue'];
+  public get adblue() : [ number, boolean ] {
+    return [ this['Precio Adblue'], Number.isNaN(this['Precio Adblue'])];
   }
 
-  public get gnc() : string {
-    return this['Precio Gas Natural Comprimido'];
+  public set adblue(precio: string){
+    var p : string = precio.replace(',','.');
+    this["Precio Adblue"] = (p === '') ? NaN : parseFloat(p)
+  } 
+
+  public get gnc() : [ number, boolean ] {
+    return [ 
+      this['Precio Gas Natural Comprimido'], 
+      Number.isNaN(this['Precio Gas Natural Comprimido'])
+    ];
   }
 
-  public get gnl() : string {
-    return this['Precio Gas Natural Licuado'];
+  public set gnc(precio: string){
+    var p : string = precio.replace(',','.');
+    this['Precio Gas Natural Comprimido'] = (p === '') ? NaN : parseFloat(p)
+  } 
+
+  public get gnl() : [ number, boolean ] {
+    return [ 
+      this['Precio Gas Natural Licuado'], 
+      Number.isNaN(this['Precio Gas Natural Licuado'])
+    ];
   }
 
-  public get glp() : string {
-    return this['Precio Gases licuados del petróleo'];
+  public set gnl(precio: string){
+    var p : string = precio.replace(',','.');
+    this['Precio Gas Natural Licuado'] = (p === '') ? NaN : parseFloat(p)
+  } 
+
+  public get glp() : [ number, boolean ] {
+    return [ 
+      this['Precio Gases licuados del petróleo'], 
+      Number.isNaN(this['Precio Gases licuados del petróleo'])
+    ];
   }
 
-  public get gasoleoA() : string {
-    return this['Precio Gasoleo A'];
+  public set glp(precio: string){
+    var p : string = precio.replace(',','.');
+    this['Precio Gases licuados del petróleo'] = (p === '') ? NaN : parseFloat(p)
   }
 
-  public get gasoleoB() : string {
-    return this['Precio Gasoleo B'];
+  public get gasoleoA() : [ number, boolean ] {
+    return [ 
+      this['Precio Gasoleo A'], 
+      Number.isNaN(this['Precio Gasoleo A'])
+    ];
   }
 
-  public get gasoleoPremium() : string {
-    return this['Precio Gasoleo Premium'];
+  public set gasoleoA(precio: string){
+    var p : string = precio.replace(',','.');
+    this['Precio Gasoleo A'] = (p === '') ? NaN : parseFloat(p)
   }
 
-  public get gasolina95e10() : string {
-    return this['Precio Gasolina 95 E10'];
+  public get gasoleoB() : [ number, boolean ] {
+    return [ 
+      this['Precio Gasoleo B'], 
+      Number.isNaN(this['Precio Gasoleo B'])
+    ];
   }
 
-  public get gasolina95e25() : string {
-    return this['Precio Gasolina 95 E25'];
+  public set gasoleoB(precio: string){
+    var p : string = precio.replace(',','.');
+    this['Precio Gasoleo B'] = (p === '') ? NaN : parseFloat(p)
   }
 
-  public get gasolina95E5() : string {
-    return this['Precio Gasolina 95 E5'];
+  public get gasoleoPremium() : [ number, boolean ] {
+    return [ this['Precio Gasoleo Premium'], Number.isNaN(this['Precio Gasoleo Premium'])];
   }
 
-  public get gasolina95E5Premium() : string {
-    return this['Precio Gasolina 95 E5 Premium'];
+  public set gasoleoPremium(precio: string){
+    var p : string = precio.replace(',','.');
+    this['Precio Gasoleo Premium'] = (p === '') ? NaN : parseFloat(p)
   }
 
-  public get gasolina95E5E85() : string {
-    return this['Precio Gasolina 95 E85'];
+  public get gasolina95e10() : [ number, boolean ] {
+    return [ this['Precio Gasolina 95 E10'], Number.isNaN(this['Precio Gasolina 95 E10'])];
   }
 
-  public get gasolina98E10() : string {
-    return this['Precio Gasolina 98 E10'];
+  public set gasolina95e10(precio: string){
+    var p : string = precio.replace(',','.');
+    this['Precio Gasolina 95 E10'] = (p === '') ? NaN : parseFloat(p)
   }
 
-  public get gasolina98E5() : string {
-    return this['Precio Gasolina 98 E5'];
+  public get gasolina95e25() : [ number, boolean ] {
+    return [ 
+      this['Precio Gasolina 95 E25'], 
+      Number.isNaN(this['Precio Gasolina 95 E25'])
+    ];
+  }
+
+  public set gasolina95e25(precio: string){
+    var p : string = precio.replace(',','.');
+    this['Precio Gasolina 95 E25'] = (p === '') ? NaN : parseFloat(p)
+  }
+
+  public get gasolina95E5() : [ number, boolean ] {
+    return [ this['Precio Gasolina 95 E5'], Number.isNaN(this['Precio Gasolina 95 E5'])];
+  }
+
+  public set gasolina95E5(precio: string) {
+    var p : string = precio.replace(',','.');
+    this['Precio Gasolina 95 E5'] = (p === '') ? NaN : parseFloat(p)
+  }
+
+  public get gasolina95E5Premium() : [ number, boolean ] {
+    return [ 
+      this['Precio Gasolina 95 E5 Premium'], 
+      Number.isNaN(this['Precio Gasolina 95 E5 Premium'])
+    ];
+  }
+
+  public set gasolina95E5Premium(precio: string){
+    var p : string = precio.replace(',','.');
+    this['Precio Gasolina 95 E5 Premium'] = (p === '') ? NaN : parseFloat(p)
+  }
+
+  public get gasolina95E5E85() : [ number, boolean ] {
+    return [ 
+      this['Precio Gasolina 95 E85'], 
+      Number.isNaN(this['Precio Gasolina 95 E85'])
+    ];
+  }
+
+  public set gasolina95E5E85(precio: string){
+    var p : string = precio.replace(',','.');
+    this['Precio Gasolina 95 E85'] = (p === '') ? NaN : parseFloat(p)
+  }
+
+  public get gasolina98E10() : [ number, boolean ] {
+    return [ 
+      this['Precio Gasolina 95 E10'], 
+      Number.isNaN(this['Precio Gasolina 95 E10'])
+    ];
+  }
+
+  public set gasolina98E10(precio: string){
+    var p : string = precio.replace(',','.');
+    this['Precio Gasolina 95 E10'] = (p === '') ? NaN : parseFloat(p)
+  }
+
+  public get gasolina98E5() : [ number, boolean ] {
+    return [ 
+      this['Precio Gasolina 95 E5'], 
+      Number.isNaN(this['Precio Gasolina 95 E5'])
+    ];
+  }
+
+  public set gasolina98E5(precio: string){
+    var p : string = precio.replace(',','.');
+    this['Precio Gasolina 98 E5'] = (p === '') ? NaN : parseFloat(p)
   }
 }

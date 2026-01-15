@@ -10,11 +10,12 @@ import { CurrentLocation } from '../../common/current-location';
 import { EstacionTerrestre } from '../../common/estacion-terrestre';
 
 import { PetrolStationsService } from '../../services/petrol-stations-service';
+import { EessCard } from '../eess-card/eess-card';
 
 @Component({
   selector: 'app-map-component',
   imports: [
-    AsyncPipe, FormsModule
+    AsyncPipe, FormsModule, EessCard
 ],
   templateUrl: './map.html',
   styleUrl: './map.css',
@@ -26,6 +27,8 @@ export class MapComponent implements OnInit {
   /*------------------------------------*/
   public coor$!: BehaviorSubject<CurrentLocation>;
   public petrolStation$!: BehaviorSubject<EstacionTerrestre[]>;
+
+  public showCards: boolean = false;
 
   private _map!: L.Map;
   private readonly _tile = new L.TileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png');
@@ -48,12 +51,8 @@ export class MapComponent implements OnInit {
     console.log(`MapComponent ngOnInit called.`);    
     this._activatedRoute.data.subscribe(
       (data) => {
-        console.log(data['petrolStations']);
         this.petrolStation$.next(data['petrolStations']);
-        
-        console.log(data['currentLocation']);
         this.coor$.next(data['currentLocation']);
-
       }
     );
 
@@ -69,8 +68,20 @@ export class MapComponent implements OnInit {
     this.drawMap();
   }
 
+  public updateShowCards() : boolean {
+    for(var station of this.petrolStation$.getValue()){
+      if(station.drawn){
+        this.showCards = true
+        return this.showCards;
+      }
+    }
+    this.showCards = false;
+    return this.showCards;
+  }
+
   public set mapRadius(radius: number) {
     this._petrolStationsService.radius = radius;
+    this.updateShowCards();
   }
 
   /*------------------------------------*/
@@ -86,8 +97,6 @@ export class MapComponent implements OnInit {
     this._tile.addTo(this._map);
     coor.marker.addTo(this._map);
     coor.circle.addTo(this._map);
-
-    console.log(coor);
 
     console.log(`Current stations available: ${this.petrolStation$.getValue().length}`);
 

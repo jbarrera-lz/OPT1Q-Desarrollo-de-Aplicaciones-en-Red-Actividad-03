@@ -63,7 +63,6 @@ export class PetrolStationsService {
             }
 
             obs.next(eessCollection);
-            obs.complete();
           }
         );
       }
@@ -85,9 +84,7 @@ export class PetrolStationsService {
                 }
               );
             }
-            console.log(loc);
             obs.next(loc);
-            obs.complete();
           },
           (error) => {
             console.error(`Error obtaining geolocation: ${error}`);
@@ -131,7 +128,6 @@ export class PetrolStationsService {
       eess[i].drawn = ( d <= r ) ? true : false;
     }
     this._stationsAvailable.next(eess);
-    this._stationsAvailable.complete();
   }
 
   private get coordenates() : [ number, number ] {

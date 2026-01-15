@@ -9,9 +9,10 @@ body {
   height: 100vh;
   width: 100%;
 }
+
 :root {
-  --primary-color: #1A237E;
+  --primary-color: #000000;
   --secondary-color: 255, 255, 255;
-  --accent-color: #5C6BC0;
+  --accent-color: #d7e8b0;
   --shadow-color: #000000;
 }

@@ -11,7 +11,7 @@ export class CurrentLocation {
   // private readonly _icon = new L.Icon.Default;
   private readonly _icon = new L.Icon(
     {
-      iconUrl: 'src/assets/img/person_pin_circle.png',
+      iconUrl: 'src/assets/img/person_pin_circle.svg',
       iconSize: [48, 48],
       iconAnchor: [48, 48],
       popupAnchor: [0, 0],

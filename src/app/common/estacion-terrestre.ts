@@ -35,7 +35,7 @@ export class EstacionTerrestre {
   
   private readonly _iconPetrolStation = new L.Icon(
     {
-      iconUrl: 'src/assets/img/local_gas.png',
+      iconUrl: 'src/assets/img/local_gas.svg',
       iconSize: [24, 24],
       iconAnchor: [24, 24],
       popupAnchor: [0, 0],
@@ -111,6 +111,10 @@ Localidad: ${this.localidad}`
     );
   }
 
+  public get petrolStationPicture() : string {
+    return 'src/assets/img/oil_barrel.svg';
+  }
+
   public get marker() : L.Marker {
     return this._marker;
   }
@@ -137,5 +141,61 @@ Localidad: ${this.localidad}`
 
   public get ccaa() : string {
     return this._county;
+  }
+
+  public get adblue() : string {
+    return this['Precio Adblue'];
+  }
+
+  public get gnc() : string {
+    return this['Precio Gas Natural Comprimido'];
+  }
+
+  public get gnl() : string {
+    return this['Precio Gas Natural Licuado'];
+  }
+
+  public get glp() : string {
+    return this['Precio Gases licuados del petróleo'];
+  }
+
+  public get gasoleoA() : string {
+    return this['Precio Gasoleo A'];
+  }
+
+  public get gasoleoB() : string {
+    return this['Precio Gasoleo B'];
+  }
+
+  public get gasoleoPremium() : string {
+    return this['Precio Gasoleo Premium'];
+  }
+
+  public get gasolina95e10() : string {
+    return this['Precio Gasolina 95 E10'];
+  }
+
+  public get gasolina95e25() : string {
+    return this['Precio Gasolina 95 E25'];
+  }
+
+  public get gasolina95E5() : string {
+    return this['Precio Gasolina 95 E5'];
+  }
+
+  public get gasolina95E5Premium() : string {
+    return this['Precio Gasolina 95 E5 Premium'];
+  }
+
+  public get gasolina95E5E85() : string {
+    return this['Precio Gasolina 95 E85'];
+  }
+
+  public get gasolina98E10() : string {
+    return this['Precio Gasolina 98 E10'];
+  }
+
+  public get gasolina98E5() : string {
+    return this['Precio Gasolina 98 E5'];
   }
 }

@@ -34,31 +34,38 @@ export class PetrolStationsService {
   loc.updateCoordenates(lat, lon);
   this._location.next(loc);
   this.updateDrawnMarks();
-}
+  }
 
-public updateRadiusKm(r: number): void {
+  public updateRadiusKm(r: number): void {
   const loc = this._location.getValue();
   loc.radius = r;
   this._location.next(loc);
   this.updateDrawnMarks();
-}
+  } 
   /** Lista blanca de marcas (solo estas) */
   public set whitelistBrands(brands: string[]) {
     this._whitelistBrands = brands.map(b => b.toLowerCase());
-    this.updateDrawnMarks();
+    // NO llamamos aquí a updateDrawnMarks
   }
 
   /** Lista negra de marcas (excluir estas) */
   public set blacklistBrands(brands: string[]) {
     this._blacklistBrands = brands.map(b => b.toLowerCase());
-    this.updateDrawnMarks();
+    // NO llamamos aquí a updateDrawnMarks
   }
 
   /** Tipo de carburante a filtrar (campo de EstacionTerrestre) */
   public set fuelType(fuel: string | null) {
     this._fuelType = fuel;
-    this.updateDrawnMarks();
+    // NO llamamos aquí a updateDrawnMarks
   }
+
+  /** Aplica todos los filtros actuales (radio + marcas + combustible) */
+  public applyFilters(): void {
+  console.log('[PetrolStationsService] applyFilters llamado');
+  this.updateDrawnMarks();
+  }
+
 
   public get stations() : BehaviorSubject<EstacionTerrestre[]> {  
     return this._stationsAvailable;
@@ -159,27 +166,38 @@ public updateRadiusKm(r: number): void {
   /* Private Methods
   /*------------------------------------*/
   private static calculateDistance(
-    lat1: number, lon1: number, 
-    lat2: number, lon2: number) : number {
-    const Earth_Radius = 6371e3; // metros
-    const phi1 = lat1 * Math.PI/180; // radianes
-    const phi2 = lat2 * Math.PI/180; // radianes
-    const delta_latitude = (lat2-lat1) * Math.PI/180.0;
-    const delta_longitude = (lon2-lon1) * Math.PI/180.0;
+  lat1: number, lon1: number, 
+  lat2: number, lon2: number
+): number {
+  const Earth_Radius = 6371e3; // metros
+  const phi1 = lat1 * Math.PI / 180;
+  const phi2 = lat2 * Math.PI / 180;
+  const delta_latitude  = (lat2 - lat1) * Math.PI / 180.0;
+  const delta_longitude = (lon2 - lon1) * Math.PI / 180.0;
 
-    const a = Math.sin(delta_latitude/2) * Math.sin(delta_longitude/2) +
-              Math.cos(phi1) * Math.cos(phi2) *
-              Math.sin(delta_longitude/2) * Math.sin(delta_longitude/2);
+  const a =
+    Math.sin(delta_latitude / 2) * Math.sin(delta_latitude / 2) +
+    Math.cos(phi1) * Math.cos(phi2) *
+    Math.sin(delta_longitude / 2) * Math.sin(delta_longitude / 2);
 
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 
-    return Earth_Radius * c; // metros
-  }
+  return Earth_Radius * c; // metros
+}
+
 
   private updateDrawnMarks() {
     const r = this._location.getValue().radius; // metros
     const eess = this._stationsAvailable.getValue();
     const [lat0, lon0] = this.coordenates;
+// Normalizamos listas de marcas a minúsculas y sin espacios
+  const whitelist = this._whitelistBrands
+    .map(b => b.toLowerCase().trim())
+    .filter(b => b.length > 0);
+
+  const blacklist = this._blacklistBrands
+    .map(b => b.toLowerCase().trim())
+    .filter(b => b.length > 0);
 
     for (const station of eess) {
       // 1) filtro por radio
@@ -192,34 +210,43 @@ public updateRadiusKm(r: number): void {
 
       let visible = d <= r;
 
-      // 2) filtro por lista blanca de marcas
-      if (visible && this._whitelistBrands.length > 0) {
-        visible = this._whitelistBrands.includes(station.rotulo.toLowerCase());
-      }
+      // Normalizamos el rótulo de la estación
+    const stationBrand = (station.rotulo || '').toLowerCase().trim();
 
-      // 3) filtro por lista negra de marcas
-      if (visible && this._blacklistBrands.length > 0) {
-        if (this._blacklistBrands.includes(station.rotulo.toLowerCase())) {
-          visible = false;
-        }
+    // 2) filtro por lista blanca de marcas (match flexible)
+    if (visible && whitelist.length > 0) {
+      const matchWhitelist = whitelist.some(w => stationBrand.includes(w));
+      if (!matchWhitelist) {
+        visible = false;
       }
-  
-      // 4) filtro por tipo de carburante (que tenga precio en ese campo)
-      if (visible && this._fuelType) {
-        // const priceStr = (station as any)[this._fuelType] as string;
-        // if (!priceStr || priceStr.trim() === '') {
-        //   visible = false;
-        // }
-        if (!(station as any)[this._fuelType][1]) {
-          visible = false;
-        }
-      }
-      station.drawn = visible;
     }
-    this._stationsAvailable.next(eess);
+
+      // 3) filtro por lista negra de marcas (match flexible)
+    if (visible && blacklist.length > 0) {
+      const matchBlacklist = blacklist.some(b => stationBrand.includes(b));
+      if (matchBlacklist) {
+        visible = false;
+      }
+    }
+
+    // 4) filtro por tipo de carburante (que tenga precio válido en ese campo)
+    if (visible && this._fuelType) {
+      const priceTuple = (station as any)[this._fuelType] as [number, boolean] | undefined;
+
+      // Si no existe la propiedad o el flag de “no disponible” es true, la ocultamos
+      if (!priceTuple || priceTuple[1]) {
+        visible = false;
+      }
+    }
+
+    station.drawn = visible;
   }
+
+  // Si en algún sitio dependes de que el BehaviorSubject emita de nuevo:
+  this._stationsAvailable.next(eess);
+}
 
   private get coordenates() : [ number, number ] {
     return this._location.getValue().LatLong;
   }
-}
+} 

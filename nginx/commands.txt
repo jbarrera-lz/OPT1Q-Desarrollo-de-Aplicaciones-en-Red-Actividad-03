@@ -1,8 +1,0 @@
-------------------
-openssl genrsa -out ca.key 4096
-openssl req -x509 -new -nodes -sha512 -days 365 -key ca.key -out ca.crt -config v3_unir.ext
-openssl genrsa -out unir.development.key 4096
-openssl req -new -nodes -key unir.development.key -config v3_unir.ext -out unir.development.csr
-openssl req -noout -text -in unir.development.csr
-openssl x509 -req -sha512 -days 365 -extfile v3_unir.ext -CA ca.crt -CAkey ca.key -CAcreateserial -in unir.development.csr -out unir.development.crt -extensions req_ext
-openssl x509 -inform PEM -in unir.development.crt -out unir.development.cert

@@ -56,7 +56,7 @@
 /* --- MAPA --- */
 .map-container {
   background: #e5e7eb;
-  border-radius: 12px;
+  border-radius: 5px;
   overflow: hidden;
   box-shadow: 0 4px 10px rgba(0,0,0,0.08);
 }
@@ -105,15 +105,42 @@
   font-weight: 500;
   margin-bottom: 4px;
   color: #4b5563;
+  margin: 1% 0px;
 }
 
-.radius-input input,
+/* .radius-input input,
 .manual-input input,
 .filters input,
 .filters select {
   width: 100%;
   padding: 6px 8px;
   border-radius: 8px;
+  border: 1px solid #d1d5db;
+  font-size: 0.9rem;
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  background: #f9fafb;
+} */
+
+.radius-input input,
+.manual-input input,
+.filters input {
+  width: 96%;
+  padding: 1% 10px;
+  margin: 0px 4% 0px 0px;
+  border-radius: 5px;
+  border: 1px solid #d1d5db;
+  font-size: 0.9rem;
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  background: #f9fafb;
+}
+
+.filters select {
+  width: 99%;
+  padding: 1% 5px;
+  margin: 0px 1% 0px 0px;
+  border-radius: 5px;
   border: 1px solid #d1d5db;
   font-size: 0.9rem;
   outline: none;
@@ -143,7 +170,7 @@
   margin-top: 8px;
   display: inline-block;
   padding: 6px 10px;
-  border-radius: 8px;
+  border-radius: 5px;
   border: none;
   background: #2563eb;
   color: #ffffff;

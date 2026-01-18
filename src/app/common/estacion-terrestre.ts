@@ -42,7 +42,109 @@ export class EstacionTerrestre {
       className: 'gas-station-icon'
     }
   )
-  
+  private static readonly DAY_ORDER: string[] = ['L', 'M', 'X', 'J', 'V', 'S', 'D'];
+private static readonly DAY_TO_JS: Record<string, number> = {
+  'D': 0, // Domingo
+  'L': 1,
+  'M': 2,
+  'X': 3,
+  'J': 4,
+  'V': 5,
+  'S': 6,
+};
+
+private static timeToMinutes(str: string): number {
+  const [hStr, mStr] = str.split(':');
+  let h = parseInt(hStr, 10);
+  let m = parseInt(mStr, 10);
+
+  // Caso especial 24:00 -> lo dejamos como 23:59
+  if (h === 24 && m === 0) {
+    h = 23;
+    m = 59;
+  }
+
+  return h * 60 + m;
+}
+
+private static expandDayRange(token: string): number[] {
+  token = token.trim().toUpperCase();
+
+  // Rango tipo "L-V" o "S-D"
+  if (token.includes('-')) {
+    const [from, to] = token.split('-').map(t => t.trim().toUpperCase());
+    const startIdx = EstacionTerrestre.DAY_ORDER.indexOf(from);
+    const endIdx   = EstacionTerrestre.DAY_ORDER.indexOf(to);
+
+    if (startIdx === -1 || endIdx === -1) {
+      return [];
+    }
+
+    const result: number[] = [];
+    let i = startIdx;
+
+    // Recorremos circularmente L,M,X,J,V,S,D
+    while (true) {
+      const dayChar = EstacionTerrestre.DAY_ORDER[i];
+      const jsDay = EstacionTerrestre.DAY_TO_JS[dayChar];
+      if (jsDay !== undefined) {
+        result.push(jsDay);
+      }
+
+      if (i === endIdx) break;
+      i = (i + 1) % EstacionTerrestre.DAY_ORDER.length;
+    }
+
+    return result;
+  }
+
+  // Día suelto "L", "S", "D", etc.
+  const jsDay = EstacionTerrestre.DAY_TO_JS[token];
+  return jsDay === undefined ? [] : [jsDay];
+}
+
+private getTimetableSegments(): { days: number[]; open: number; close: number }[] {
+  const timetable = this._timetable;
+  if (!timetable) {
+    return [];
+  }
+
+  const segments: { days: number[]; open: number; close: number }[] = [];
+
+  // Ejemplos que captura:
+  // "L-D: 06:00-00:00"
+  // "L-V: 10:00-13:00 y S-D: 13:00-14:00"
+  const regex = /([LMXJVSD](?:-[LMXJVSD])?)\s*:\s*(\d{1,2}:\d{2})\s*-\s*(\d{1,2}:\d{2})/gi;
+  let match: RegExpExecArray | null;
+
+  while ((match = regex.exec(timetable)) !== null) {
+    const dayToken = match[1];   // "L-D", "L-V", "S-D", etc.
+    const openStr  = match[2];   // "06:00"
+    const closeStr = match[3];   // "00:00"
+
+    const days = EstacionTerrestre.expandDayRange(dayToken);
+    const openMinutes  = EstacionTerrestre.timeToMinutes(openStr);
+    let   closeMinutes = EstacionTerrestre.timeToMinutes(closeStr);
+
+    // CASO ESPECIAL: "06:00-00:00" => interpretamos 00:00 como 24:00
+    // siempre que la hora de cierre sea 00:00 y la apertura sea > 0
+    if (closeMinutes === 0 && /^0{1,2}:0{2}$/.test(closeStr) && openMinutes > 0) {
+      closeMinutes = 24 * 60; // 1440
+    }
+
+    if (days.length > 0) {
+      segments.push({
+        days,
+        open: openMinutes,
+        close: closeMinutes,
+      });
+    }
+  }
+
+  return segments;
+}
+
+
   constructor(eessData: ListaEESSPrecio) {
     this._coordenates = {
       latitude: parseFloat(eessData['Latitud'].replace(',','.')),
@@ -91,41 +193,79 @@ export class EstacionTerrestre {
     return this._coordenates['longitude'];
   }
 
-  public get isOpenNow(): boolean {
-    const timetable: string = this._timetable || '';
-    if (!timetable) return false;
-
-    const normalized = timetable.trim().toLowerCase();
-
-    // 1) Casos tipo "24H", "24 H", "24 HORAS", etc. → siempre abierta
-    if (
-      normalized.includes('24h') ||
-      normalized.includes('24 h') ||
-      normalized.includes('24 horas') ||
-      normalized.includes('24horas')
-    ) {
-      return true;
-    }
-
-    // 2) Intentamos encontrar un rango horario HH:MM-HH:MM
-    const match = timetable.match(/(\d{2}):(\d{2})\s*-\s*(\d{2}):(\d{2})/);
-    if (!match) return false;
-
-    const now = new Date();
-    const hour = now.getHours() + now.getMinutes() / 60;
-
-    const openHour = parseInt(match[1], 10) + parseInt(match[2], 10) / 60;
-    const closeHour = parseInt(match[3], 10) + parseInt(match[4], 10) / 60;
-
-    // 3) Si el cierre es menor que la apertura, asumimos horario nocturno (ej. 22:00-06:00)
-    if (closeHour < openHour) {
-      // Abre por la noche: está abierta si es >= apertura o <= cierre
-      return hour >= openHour || hour <= closeHour;
-    }
-
-    // 4) Horario normal dentro del mismo día
-    return hour >= openHour && hour <= closeHour;
+public get isOpenNow(): boolean {
+  const timetable = this._timetable;
+  if (!timetable) {
+    return false;
   }
+
+  const now = new Date();
+  const jsDay = now.getDay(); // 0 = domingo, 1 = lunes, ..., 6 = sábado
+  const minutesNow = now.getHours() * 60 + now.getMinutes();
+
+  const normalized = timetable.toLowerCase();
+
+  // 1) Casos claros de 24h
+  if (
+    normalized.includes('24h') ||
+    normalized.includes('24 h') ||
+    normalized.includes('24 horas') ||
+    normalized.includes('24horas')
+  ) {
+    return true;
+  }
+
+  // 2) Intentamos parsear segmentos explícitos Día(s): HH:MM-HH:MM
+  const segments = this.getTimetableSegments();
+
+  if (segments.length > 0) {
+    return segments.some(seg => {
+      if (!seg.days.includes(jsDay)) {
+        return false;
+      }
+
+      // Tramo normal dentro del mismo día
+      if (seg.close > seg.open) {
+        return minutesNow >= seg.open && minutesNow < seg.close;
+      }
+
+      // Tramo que cruza medianoche (ej. 22:00-06:00)
+      // abierto si es >= apertura O < cierre
+      if (seg.close < seg.open) {
+        return minutesNow >= seg.open || minutesNow < seg.close;
+      }
+
+      // Si apertura y cierre coinciden (raro), lo consideramos cerrado
+      return false;
+    });
+  }
+
+  // 3) FALLBACK: no hemos sabido parsear días, pero sí un tramo horario simple
+  const match = timetable.match(/(\d{1,2}):(\d{2})\s*-\s*(\d{1,2}):(\d{2})/);
+  if (!match) {
+    return false;
+  }
+
+  const openMinutes =
+    parseInt(match[1], 10) * 60 + parseInt(match[2], 10);
+  let closeMinutes =
+    parseInt(match[3], 10) * 60 + parseInt(match[4], 10);
+
+  // Reaplicamos la lógica 06:00-00:00 => 24:00 en el fallback
+  if (closeMinutes === 0 && openMinutes > 0) {
+    closeMinutes = 24 * 60;
+  }
+
+  if (closeMinutes > openMinutes) {
+    return minutesNow >= openMinutes && minutesNow < closeMinutes;
+  }
+
+  // Cruza medianoche (ej. 22:00-06:00)
+  return minutesNow >= openMinutes || minutesNow < closeMinutes;
+}
+
+
+
 
   /** Location Marker */
   public set marker(eessData : ListaEESSPrecio) {
@@ -312,20 +452,20 @@ Localidad: ${this.localidad}`
 
   public get gasolina98E10() : [ number, boolean ] {
     return [ 
-      this['Precio Gasolina 95 E10'], 
-      Number.isNaN(this['Precio Gasolina 95 E10'])
+      this['Precio Gasolina 98 E10'], 
+      Number.isNaN(this['Precio Gasolina 98 E10'])
     ];
   }
 
   public set gasolina98E10(precio: string){
     var p : string = precio.replace(',','.');
-    this['Precio Gasolina 95 E10'] = (p === '') ? NaN : parseFloat(p)
+    this['Precio Gasolina 98 E10'] = (p === '') ? NaN : parseFloat(p)
   }
 
   public get gasolina98E5() : [ number, boolean ] {
     return [ 
-      this['Precio Gasolina 95 E5'], 
-      Number.isNaN(this['Precio Gasolina 95 E5'])
+      this['Precio Gasolina 98 E5'], 
+      Number.isNaN(this['Precio Gasolina 98 E5'])
     ];
   }
 

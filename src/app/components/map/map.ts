@@ -74,16 +74,17 @@ export class MapComponent implements OnInit {
     this.drawMap();
   }
 
-  public updateShowCards() : boolean {
-    for(var station of this.petrolStation$.getValue()){
-      if(station.drawn){
-        this.showCards = true
-        return this.showCards;
-      }
+  public updateShowCards(): boolean {
+  for (const station of this.petrolStation$.getValue()) {
+    if (station.drawn) {
+      this.showCards = true;
+      return this.showCards;
     }
-    this.showCards = false;
-    return this.showCards;
   }
+  this.showCards = false;
+  return this.showCards;
+}
+
 
   public set mapRadius(radius: number) {
     this._petrolStationsService.radius = radius;
@@ -112,45 +113,34 @@ export class MapComponent implements OnInit {
     }
   }
 
-  public applyFilters(): void {
-    const whitelist = this.includeBrands
-      .split(',')
-      .map(b => b.trim())
-      .filter(b => b.length > 0);
-    
-    const blacklist = this.excludeBrands
-      .split(',')
-      .map(b => b.trim())
-      .filter(b => b.length > 0);
-    
-    this._petrolStationsService.whitelistBrands = whitelist;
-    this._petrolStationsService.blacklistBrands = blacklist;
-    this._petrolStationsService.fuelType = this.selectedFuelType;
+public applyFilters(): void {
+  const whitelist = this.includeBrands
+    .split(',')
+    .map(b => b.trim())
+    .filter(b => b.length > 0);
 
-    this.updateShowCards();
-  }
+  const blacklist = this.excludeBrands
+    .split(',')
+    .map(b => b.trim())
+    .filter(b => b.length > 0);
 
-  public get visibleStations(): EstacionTerrestre[] {
-    // Primero, estaciones dentro del radio / marcas (drawn = true)
-    let stations = this.petrolStation$.getValue().filter(s => s.drawn);
+  // Guardamos filtros en el servicio (solo estado)
+  this._petrolStationsService.whitelistBrands = whitelist;
+  this._petrolStationsService.blacklistBrands = blacklist;
+  this._petrolStationsService.fuelType = this.selectedFuelType;
 
-    // Si no hay tipo de carburante seleccionado, devolvemos todas las "drawn"
-    if (!this.selectedFuelType) {
-      return stations;
-    }
+  // Y AHORA sí aplicamos filtros de golpe
+  this._petrolStationsService.applyFilters();
 
-    // Si hay tipo de carburante, nos quedamos solo con las que tienen precio para ese tipo
-    const field = this.selectedFuelType; // ej: 'gasolina95E5'
+  // Actualizamos tarjetas
+  this.updateShowCards();
+}
 
-    // stations = stations.filter(s => {
-    //   const priceStr = (s as any)[field] as string;
-    //   console.log((s as any)[field][1] );
-    //   return priceStr && priceStr.trim() !== '';      
-    // });
-    stations = stations.filter(s => !(s as any)[field][1]);
 
-    return stations;
-  }
+ public get visibleStations(): EstacionTerrestre[] {
+  return this.petrolStation$.getValue().filter(s => s.drawn);
+}
+
 
   public get cheapestStation(): EstacionTerrestre | null {
     const stations = this.visibleStations;
